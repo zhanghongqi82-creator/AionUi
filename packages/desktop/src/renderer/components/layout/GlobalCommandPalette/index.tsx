@@ -15,6 +15,7 @@ import type { RefInputType } from '@arco-design/web-react/es/Input/interface';
 import {
   ApplicationOne,
   Calendar,
+  CloseSmall,
   Cpu,
   FolderOpen,
   MessageOne,
@@ -97,7 +98,6 @@ const GlobalCommandPalette: React.FC = () => {
   const [recentEntries, setRecentEntries] = useState(() => readRecentCommandPaletteEntries());
   const localeKey = resolveLocaleKey(i18n.language);
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
-  const commandKey = isMac ? '⌘K' : 'Ctrl K';
   const newChatKey = isMac ? '⌘N' : 'Ctrl N';
   const openProjectKey = isMac ? '⌘O' : 'Ctrl O';
 
@@ -278,7 +278,8 @@ const GlobalCommandPalette: React.FC = () => {
               : navigate('/guid', { state: { selectedAssistantId: assistant.id } }),
         };
 
-        const modelItems = assistant.models.map<CommandPaletteItem>((model, modelIndex) => ({
+        const models = Array.isArray(assistant.models) ? assistant.models : [];
+        const modelItems = models.map<CommandPaletteItem>((model, modelIndex) => ({
           id: `model:${assistant.id}:${model}`,
           kind: 'model',
           icon: 'model',
@@ -414,9 +415,9 @@ const GlobalCommandPalette: React.FC = () => {
             placeholder={t('common.commandPalette.placeholder')}
             className={styles.searchInput}
             allowClear
+            clearIcon={<CloseSmall size={16} aria-label={t('common.clear')} />}
             aria-label={t('common.commandPalette.placeholder')}
           />
-          <span className={styles.keyHint}>ESC</span>
         </div>
 
         <div className={styles.body}>
@@ -467,21 +468,6 @@ const GlobalCommandPalette: React.FC = () => {
               </Button>
             </div>
           )}
-        </div>
-
-        <div className={styles.footer}>
-          <span className={styles.footerHint}>
-            <span className={styles.footerKeys}>↑ ↓</span>
-            {t('common.commandPalette.selectHint')}
-          </span>
-          <span className={styles.footerHint}>
-            <span className={styles.footerKeys}>Enter</span>
-            {t('common.commandPalette.openHint')}
-          </span>
-          <span className={styles.footerHint}>
-            <span className={styles.footerKeys}>{commandKey}</span>
-            {t('common.commandPalette.closeHint')}
-          </span>
         </div>
       </div>
     </AionModal>

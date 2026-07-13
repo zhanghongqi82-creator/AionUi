@@ -35,6 +35,25 @@ const { navigateMock, showOpenMock, catalogMock } = vi.hoisted(() => ({
         team_selectable: true,
         deletable: false,
       },
+      {
+        id: 'legacy-agent',
+        source: 'generated',
+        name: 'Legacy agent',
+        name_i18n: {},
+        description_i18n: {},
+        enabled: true,
+        sort_order: 2,
+        agent_id: 'legacy-agent',
+        enabled_skills: [],
+        custom_skill_names: [],
+        disabled_builtin_skills: [],
+        context_i18n: {},
+        prompts: [],
+        prompts_i18n: {},
+        agent_status: 'online',
+        team_selectable: true,
+        deletable: false,
+      },
     ],
     conversations: [],
   },
@@ -64,6 +83,7 @@ const translations: Record<string, string> = {
   'common.commandPalette.operationFailed': 'Action failed',
   'common.commandPalette.actionKeyword': 'Action',
   'common.commandPalette.assistantKeyword': 'Assistant Agent',
+  'common.clear': 'Clear',
   'conversation.welcome.newConversation': 'New chat',
   'conversation.historySearch.untitled': 'Untitled',
   'settings.assistants': 'Assistants',
@@ -122,9 +142,27 @@ describe('GlobalCommandPalette', () => {
     fireEvent.keyDown(document, { key: 'k', metaKey: true });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(5);
+    expect(screen.queryByText('ESC')).not.toBeInTheDocument();
+    expect(screen.queryByText('Select')).not.toBeInTheDocument();
+    expect(screen.queryByText('Open or close')).not.toBeInTheDocument();
 
     fireEvent.keyDown(screen.getByLabelText('Search commands'), { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('shows a trailing clear icon only while the search has content', async () => {
+    const user = userEvent.setup();
+    render(<GlobalCommandPalette />);
+    fireEvent.keyDown(document, { key: 'k', metaKey: true });
+
+    const input = screen.getByLabelText('Search commands');
+    expect(screen.queryByLabelText('Clear')).not.toBeInTheDocument();
+
+    await user.type(input, 'settings');
+    await user.click(screen.getByLabelText('Clear'));
+
+    expect(input).toHaveValue('');
+    expect(screen.queryByLabelText('Clear')).not.toBeInTheDocument();
   });
 
   it('uses arrow keys and Enter to execute the active result without auto-selecting a folder', async () => {
@@ -154,6 +192,16 @@ describe('GlobalCommandPalette', () => {
     expect(navigateMock).toHaveBeenCalledWith('/assistants', {
       state: { openAssistantId: 'codex', openAssistantEditor: true },
     });
+  });
+
+  it('keeps assistants without a model list searchable', async () => {
+    const user = userEvent.setup();
+    render(<GlobalCommandPalette />);
+    fireEvent.keyDown(document, { key: 'k', metaKey: true });
+
+    await user.type(screen.getByLabelText('Search commands'), 'Legacy agent');
+
+    expect(screen.getByTestId('command-palette-item-assistant:legacy-agent')).toBeInTheDocument();
   });
 
   it('shows a recoverable no-results state without rewriting the query', async () => {
