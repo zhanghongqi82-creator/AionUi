@@ -20,6 +20,7 @@ import GuidActionRow from './components/GuidActionRow';
 import GuidInputCard from './components/GuidInputCard';
 import GuidModelSelector from './components/GuidModelSelector';
 import QuickActionButtons from './components/QuickActionButtons';
+import QuickTaskCards, { type QuickTaskId } from './components/QuickTaskCards';
 import FeedbackReportModal from '@/renderer/components/settings/SettingsModal/contents/FeedbackReportModal';
 import { useGuidAssistantSelection } from './hooks/useGuidAssistantSelection';
 import { useGuidInput } from './hooks/useGuidInput';
@@ -32,7 +33,8 @@ import SpeechInputButton from '@/renderer/components/chat/SpeechInputButton';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { appendSpeechTranscript } from '@/renderer/hooks/system/useSpeechInput';
 import { useLiveTranscriptInsertion } from '@/renderer/hooks/system/useLiveTranscriptInsertion';
-import { Button, ConfigProvider } from '@arco-design/web-react';
+import { ConfigProvider } from '@arco-design/web-react';
+import type { RefTextAreaType } from '@arco-design/web-react/es/Input/textarea';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -44,10 +46,12 @@ const GuidPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const guidContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<RefTextAreaType>(null);
   const { activeBorderColor, inactiveBorderColor, activeShadow } = useInputFocusRing();
 
   const localeKey = resolveLocaleKey(i18n.language);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [selectedQuickTaskId, setSelectedQuickTaskId] = useState<QuickTaskId | null>(null);
 
   // Open external link
   const openLink = useCallback(async (url: string) => {
@@ -280,6 +284,19 @@ const GuidPage: React.FC = () => {
   const handleInputChange = useCallback(
     (value: string) => {
       guidInput.setInput(value);
+      setSelectedQuickTaskId(null);
+    },
+    [guidInput.setInput]
+  );
+
+  const handleSelectQuickTask = useCallback(
+    (taskId: QuickTaskId, template: string) => {
+      setSelectedQuickTaskId(taskId);
+      guidInput.setInput(template);
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+        inputRef.current?.dom.setSelectionRange(template.length, template.length);
+      });
     },
     [guidInput.setInput]
   );
@@ -308,31 +325,6 @@ const GuidPage: React.FC = () => {
 
   // Typewriter placeholder
   const typewriterPlaceholder = useTypewriterPlaceholder(t('conversation.welcome.placeholder'));
-  const selectedAssistantRecord = useMemo(() => {
-    if (!selectedAssistantId) return undefined;
-    const selectedId = agentSelection.selectedAssistantId;
-    const strippedId = selectedId.replace(/^builtin-/, '');
-    const candidates = new Set([selectedId, `builtin-${strippedId}`, strippedId]);
-    return agentSelection.assistants.find((item) => candidates.has(item.id));
-  }, [agentSelection.assistants, selectedAssistantId, agentSelection.selectedAssistantId]);
-  const selectedAssistantPrompts = useMemo(() => {
-    if (!selectedAssistantId) return [];
-    const resolvedPrompts =
-      selectedAssistantDetail?.prompts.recommended_i18n?.[localeKey] ||
-      selectedAssistantDetail?.prompts.recommended_i18n?.['en-US'] ||
-      selectedAssistantDetail?.prompts.recommended ||
-      selectedAssistantRecord?.prompts_i18n?.[localeKey] ||
-      selectedAssistantRecord?.prompts_i18n?.['en-US'] ||
-      selectedAssistantRecord?.prompts ||
-      [];
-
-    if (resolvedPrompts.length > 0) {
-      return resolvedPrompts;
-    }
-
-    return [t('guid.defaultPrompts.capabilities'), t('guid.defaultPrompts.skills'), t('guid.defaultPrompts.tools')];
-  }, [localeKey, selectedAssistantDetail, selectedAssistantRecord, selectedAssistantId, t]);
-
   // Sync disabledBuiltinSkills + enabledSkills from assistant detail defaults.
   useEffect(() => {
     if (!selectedAssistantId || !selectedAssistantDetail) {
@@ -645,6 +637,7 @@ const GuidPage: React.FC = () => {
           />
 
           <GuidInputCard
+            inputRef={inputRef}
             input={guidInput.input}
             onInputChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
@@ -667,28 +660,12 @@ const GuidPage: React.FC = () => {
             onClearWorkspace={() => guidInput.setDir('')}
           />
 
-          {selectedAssistantPrompts.length > 0 ? (
-            <div className='mt-18px w-full animate-fade-in'>
-              <div className={`${styles.assistantPromptHint} mb-10px text-left`}>
-                {t('guid.promptExamplesHint', { defaultValue: 'Try these example prompts:' })}
-              </div>
-              <div className='flex flex-col gap-9px'>
-                {selectedAssistantPrompts.map((prompt, index) => (
-                  <Button
-                    key={`${index}-${prompt}`}
-                    type='text'
-                    className='!h-auto !w-full !rounded-10px !border !border-border-2 !bg-bg-base !px-10px !py-10px !text-left !text-12.5px !text-t-secondary !whitespace-normal !break-words transition-colors hover:!border-aou-6 hover:!text-t-primary'
-                    onClick={() => {
-                      guidInput.setInput(prompt);
-                      guidInput.handleTextareaFocus();
-                    }}
-                  >
-                    {prompt}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          <QuickTaskCards
+            hasInput={Boolean(guidInput.input.trim())}
+            hasWorkspace={Boolean(guidInput.dir)}
+            selectedTaskId={selectedQuickTaskId}
+            onSelect={handleSelectQuickTask}
+          />
         </div>
 
         <QuickActionButtons

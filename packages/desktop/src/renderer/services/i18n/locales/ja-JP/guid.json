@@ -6,6 +6,39 @@
     "tools": "どのようなツールがありますか？"
   },
   "selectAssistantHint": "アシスタントを選択してタスクを開始",
+  "quickTasks": {
+    "heading": "タスクから始める",
+    "showSuggestions": "タスク候補を表示",
+    "analyze": {
+      "titleGeneral": "内容を分析",
+      "titleProject": "プロジェクトを分析",
+      "descriptionGeneral": "要点を整理して次の手順を提案",
+      "descriptionProject": "構成を整理して次の手順を提案",
+      "templateGeneral": "次に提供する内容を分析し、要点を整理して次の手順を提案してください。",
+      "templateProject": "現在のプロジェクトを分析し、ディレクトリ構成、主要モジュール、現状を整理して次の手順を提案してください。"
+    },
+    "fix": {
+      "title": "問題を修正",
+      "descriptionGeneral": "エラーから原因を特定して修正案を提示",
+      "descriptionProject": "エラーの原因を特定して修正",
+      "templateGeneral": "次に提供するエラーまたは現象から原因を特定し、修正案を提示してください。",
+      "templateProject": "提供するエラーから現在のプロジェクトの根本原因を特定し、修正してください。"
+    },
+    "modifyUi": {
+      "title": "UIを変更",
+      "descriptionGeneral": "説明に基づいて内容とスタイルを調整",
+      "descriptionProject": "説明に基づいて現在のUIを調整",
+      "templateGeneral": "次に提供する説明に基づいて、UIの内容とスタイルを調整してください。",
+      "templateProject": "既存のデザイン規則を維持しながら、説明に基づいて現在のプロジェクトのUIを調整してください。"
+    },
+    "organize": {
+      "title": "ファイルを整理",
+      "descriptionGeneral": "ファイルを分類して重複内容を特定",
+      "descriptionProject": "ファイルを分類して重複内容を整理",
+      "templateGeneral": "指定したファイルを分類し、削除できる重複内容を特定してください。",
+      "templateProject": "現在のプロジェクトのファイル構成を整理し、関連ファイルを分類して重複内容を削除してください。"
+    }
+  },
   "workspace": {
     "workInProject": "プロジェクトで作業",
     "optional": "任意",

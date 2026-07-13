@@ -14,6 +14,39 @@
   "selectAssistantHint": "Wähle einen Assistenten, um eine Aufgabe zu starten",
   "agentSwitcherLabel": "Agent",
   "switchedToAgent": "Zu {{agent}} gewechselt",
+  "quickTasks": {
+    "heading": "Mit einer Aufgabe beginnen",
+    "showSuggestions": "Aufgabenvorschläge anzeigen",
+    "analyze": {
+      "titleGeneral": "Inhalt analysieren",
+      "titleProject": "Projekt analysieren",
+      "descriptionGeneral": "Kernpunkte erfassen und nächste Schritte vorschlagen",
+      "descriptionProject": "Struktur prüfen und nächste Schritte vorschlagen",
+      "templateGeneral": "Analysiere den Inhalt, den ich als Nächstes bereitstelle, fasse die Kernpunkte zusammen und schlage die nächsten Schritte vor.",
+      "templateProject": "Analysiere das aktuelle Projekt, prüfe Struktur, zentrale Module und Status und schlage dann die nächsten Schritte vor."
+    },
+    "fix": {
+      "title": "Problem beheben",
+      "descriptionGeneral": "Fehlerursache finden und Lösung vorschlagen",
+      "descriptionProject": "Fehlerursache finden und beheben",
+      "templateGeneral": "Ermittle anhand des nächsten Fehlers oder Verhaltens die Ursache und schlage eine Lösung vor.",
+      "templateProject": "Ermittle anhand des angegebenen Fehlers die Ursache im aktuellen Projekt und behebe sie."
+    },
+    "modifyUi": {
+      "title": "Oberfläche ändern",
+      "descriptionGeneral": "Inhalt und Stil nach Beschreibung anpassen",
+      "descriptionProject": "Projektoberfläche nach Beschreibung anpassen",
+      "templateGeneral": "Passe Inhalt und Stil der Oberfläche anhand meiner nächsten Beschreibung an.",
+      "templateProject": "Passe die Oberfläche des aktuellen Projekts anhand meiner Beschreibung an und beachte die bestehenden Designregeln."
+    },
+    "organize": {
+      "title": "Dateien organisieren",
+      "descriptionGeneral": "Dateien gruppieren und Duplikate erkennen",
+      "descriptionProject": "Dateien gruppieren und Duplikate bereinigen",
+      "templateGeneral": "Gruppiere die angegebenen Dateien und identifiziere doppelte Inhalte, die entfernt werden können.",
+      "templateProject": "Organisiere die Dateistruktur des aktuellen Projekts, gruppiere zusammengehörige Dateien und bereinige doppelte Inhalte."
+    }
+  },
   "workspace": {
     "workInProject": "In einem Projekt arbeiten",
     "optional": "Optional",

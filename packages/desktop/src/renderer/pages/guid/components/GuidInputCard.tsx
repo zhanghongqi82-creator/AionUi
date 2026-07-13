@@ -9,6 +9,7 @@ import UploadProgressBar from '@/renderer/components/media/UploadProgressBar';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useCompositionInput } from '@/renderer/hooks/chat/useCompositionInput';
 import { Input } from '@arco-design/web-react';
+import type { RefTextAreaType } from '@arco-design/web-react/es/Input/textarea';
 import React from 'react';
 import styles from '../index.module.css';
 import GuidWorkspaceFootnote from './GuidWorkspaceFootnote';
@@ -22,6 +23,7 @@ type GuidInputCardProps = {
   onFocus: () => void;
   onBlur: () => void;
   placeholder: string;
+  inputRef?: React.Ref<RefTextAreaType>;
 
   // Styling
   isInputActive: boolean;
@@ -53,6 +55,7 @@ const GuidInputCard: React.FC<GuidInputCardProps> = ({
   onFocus,
   onBlur,
   placeholder,
+  inputRef,
   isInputActive,
   isFileDragging,
   activeBorderColor,
@@ -114,6 +117,7 @@ const GuidInputCard: React.FC<GuidInputCardProps> = ({
         }}
       >
         <Input.TextArea
+          ref={inputRef}
           autoSize={textareaAutoSize}
           placeholder={placeholder}
           spellCheck={false}

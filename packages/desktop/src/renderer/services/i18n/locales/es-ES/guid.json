@@ -9,6 +9,39 @@
   "selectAssistantHint": "Selecciona un asistente para comenzar una tarea",
   "agentSwitcherLabel": "Agente",
   "switchedToAgent": "Cambiado a {{agent}}",
+  "quickTasks": {
+    "heading": "Empieza con una tarea",
+    "showSuggestions": "Ver sugerencias de tareas",
+    "analyze": {
+      "titleGeneral": "Analizar contenido",
+      "titleProject": "Analizar proyecto",
+      "descriptionGeneral": "Identifica puntos clave y sugiere próximos pasos",
+      "descriptionProject": "Revisa la estructura y sugiere próximos pasos",
+      "templateGeneral": "Analiza el contenido que proporcionaré a continuación, identifica los puntos clave y sugiere los próximos pasos.",
+      "templateProject": "Analiza el proyecto actual, revisa su estructura, módulos clave y estado, y sugiere los próximos pasos."
+    },
+    "fix": {
+      "title": "Corregir un problema",
+      "descriptionGeneral": "Encuentra la causa y propone una solución",
+      "descriptionProject": "Encuentra y corrige la causa de un error",
+      "templateGeneral": "Usa el error o comportamiento que proporcionaré para identificar la causa y proponer una solución.",
+      "templateProject": "Usa el error proporcionado para encontrar la causa raíz en el proyecto actual y corregirla."
+    },
+    "modifyUi": {
+      "title": "Modificar la interfaz",
+      "descriptionGeneral": "Ajusta contenido y estilo según una descripción",
+      "descriptionProject": "Ajusta la interfaz del proyecto según una descripción",
+      "templateGeneral": "Usa la descripción que proporcionaré para ajustar el contenido y el estilo de la interfaz.",
+      "templateProject": "Ajusta la interfaz del proyecto actual según mi descripción y conserva sus reglas de diseño."
+    },
+    "organize": {
+      "title": "Organizar archivos",
+      "descriptionGeneral": "Agrupa archivos e identifica contenido duplicado",
+      "descriptionProject": "Agrupa archivos y elimina contenido duplicado",
+      "templateGeneral": "Ayúdame a agrupar los archivos indicados e identificar contenido duplicado que pueda eliminarse.",
+      "templateProject": "Organiza la estructura de archivos del proyecto actual, agrupa los relacionados y elimina contenido duplicado."
+    }
+  },
   "workspace": {
     "workInProject": "Trabajar en un proyecto",
     "optional": "Opcional",
