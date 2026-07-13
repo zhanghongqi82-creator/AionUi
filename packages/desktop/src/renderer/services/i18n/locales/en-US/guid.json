@@ -6,6 +6,39 @@
     "tools": "What tools do you have?"
   },
   "selectAssistantHint": "Select an assistant to start a task",
+  "quickTasks": {
+    "heading": "Start with a task",
+    "showSuggestions": "View task suggestions",
+    "analyze": {
+      "titleGeneral": "Analyze content",
+      "titleProject": "Analyze project",
+      "descriptionGeneral": "Identify key points and suggest next steps",
+      "descriptionProject": "Review the structure and suggest next steps",
+      "templateGeneral": "Analyze the content I provide next, identify the key points, and suggest the next steps.",
+      "templateProject": "Analyze the current project, review its structure, key modules, and current state, then suggest the next steps."
+    },
+    "fix": {
+      "title": "Fix an issue",
+      "descriptionGeneral": "Find the cause from an error and propose a fix",
+      "descriptionProject": "Find and fix the cause of an error",
+      "templateGeneral": "Use the error or behavior I provide next to identify the cause and propose a fix.",
+      "templateProject": "Use the error I provide to find the root cause in the current project and implement a fix."
+    },
+    "modifyUi": {
+      "title": "Modify the UI",
+      "descriptionGeneral": "Adjust UI content and styling from a description",
+      "descriptionProject": "Adjust the current project's UI from a description",
+      "templateGeneral": "Use the description I provide next to adjust the UI content and styling.",
+      "templateProject": "Adjust the current project's UI based on my description while following its existing design conventions."
+    },
+    "organize": {
+      "title": "Organize files",
+      "descriptionGeneral": "Group files and identify duplicate content",
+      "descriptionProject": "Group files and clean up duplicate content",
+      "templateGeneral": "Help me group the specified files and identify duplicate content that can be removed.",
+      "templateProject": "Organize the current project's file structure, group related files, and clean up duplicate content."
+    }
+  },
   "workspace": {
     "workInProject": "Work in a project",
     "optional": "Optional",

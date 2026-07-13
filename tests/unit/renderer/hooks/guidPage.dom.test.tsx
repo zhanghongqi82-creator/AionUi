@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,6 +17,7 @@ const {
   capturedGuidActionRowProps,
   capturedAssistantSelectionAreaProps,
   capturedGuidInputCardProps,
+  capturedQuickTaskCardsProps,
   capturedGuidSendDeps,
   resolveGuidAssistantDefaultsMock,
   sendMock,
@@ -109,6 +111,7 @@ const {
   capturedGuidActionRowProps: [] as Array<Record<string, unknown>>,
   capturedAssistantSelectionAreaProps: [] as Array<Record<string, unknown>>,
   capturedGuidInputCardProps: [] as Array<Record<string, unknown>>,
+  capturedQuickTaskCardsProps: [] as Array<Record<string, unknown>>,
   capturedGuidSendDeps: [] as Array<Record<string, unknown>>,
   resolveGuidAssistantDefaultsMock: vi.fn(() => ({
     disabledBuiltinSkillIds: [],
@@ -210,6 +213,13 @@ vi.mock('@/renderer/pages/guid/components/QuickActionButtons', () => ({
   default: () => <div data-testid='guid-quick-actions' />,
 }));
 
+vi.mock('@/renderer/pages/guid/components/QuickTaskCards', () => ({
+  default: (props: Record<string, unknown>) => {
+    capturedQuickTaskCardsProps.push(props);
+    return <div data-testid='guid-quick-task-cards' />;
+  },
+}));
+
 vi.mock('@/renderer/components/settings/SettingsModal/contents/FeedbackReportModal', () => ({
   default: () => null,
 }));
@@ -282,6 +292,7 @@ describe('GuidPage', () => {
     capturedGuidActionRowProps.length = 0;
     capturedAssistantSelectionAreaProps.length = 0;
     capturedGuidInputCardProps.length = 0;
+    capturedQuickTaskCardsProps.length = 0;
     capturedGuidSendDeps.length = 0;
     useGuidAssistantSelectionMock.mockClear();
     resolveGuidAssistantDefaultsMock.mockReturnValue({
@@ -292,6 +303,10 @@ describe('GuidPage', () => {
     modelSelectionMock.modelList = [];
     modelSelectionMock.setCurrentModel.mockReset();
     modelSelectionMock.resetCurrentModel.mockReset();
+    guidInputMock.input = '';
+    guidInputMock.dir = '';
+    guidInputMock.setInput.mockReset();
+    sendMock.sendMessageHandler.mockReset();
     agentSelectionMock.currentAgentModeOptions = [];
     agentSelectionMock.currentAcpCachedModelInfo = null;
     agentSelectionMock.selectedAssistantBackend = 'aionrs';
@@ -361,59 +376,32 @@ describe('GuidPage', () => {
     );
   });
 
-  it('renders example prompts with wrapping text for long assistant suggestions', () => {
-    agentSelectionMock.assistants = [
-      {
-        id: 'bare-aionrs',
-        source: 'generated',
-        name: 'Aion CLI',
-        name_i18n: {},
-        description_i18n: {},
-        enabled: true,
-        sort_order: 10,
-        preset_agent_type: 'aionrs',
-        enabled_skills: [],
-        custom_skill_names: [],
-        disabled_builtin_skills: [],
-        context_i18n: {},
-        prompts: [],
-        prompts_i18n: {
-          'en-US': [
-            'Create a three-page financial dashboard with profit, revenue mix, and conditional formatting highlights',
-          ],
-        },
-        models: [],
-        agent_status: 'online',
-        team_selectable: true,
-        deletable: false,
-      },
-    ];
-
-    swrMock.useSWRMock.mockImplementation((key: string | null) => {
-      if (key?.startsWith('guid.assistant.detail.')) {
-        return {
-          data: assistantDetailFixture,
-        };
-      }
-      return { data: null };
+  it('fills a quick-task template, focuses the input, and does not send automatically', () => {
+    const setSelectionRange = vi.fn();
+    const focus = vi.fn();
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      callback(0);
+      return 1;
     });
 
     render(<GuidPage />);
 
-    const promptButton = screen.getByRole('button', {
-      name: /Create a three-page financial dashboard with profit/i,
+    const inputCardProps = capturedGuidInputCardProps.at(-1);
+    const quickTaskProps = capturedQuickTaskCardsProps.at(-1);
+    const inputRef = inputCardProps?.inputRef as {
+      current: { focus: () => void; dom: { setSelectionRange: (start: number, end: number) => void } } | null;
+    };
+    inputRef.current = { focus, dom: { setSelectionRange } };
+
+    act(() => {
+      const onSelect = quickTaskProps?.onSelect as (taskId: string, template: string) => void;
+      onSelect('analyze', 'Analyze the current project.');
     });
 
-    expect(promptButton.className).toContain('!whitespace-normal');
-    expect(promptButton.className).toContain('!break-words');
-  });
-
-  it('falls back to default instruction prompts when the selected assistant has no recommendations', () => {
-    render(<GuidPage />);
-
-    expect(screen.getByRole('button', { name: 'guid.defaultPrompts.capabilities' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'guid.defaultPrompts.skills' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'guid.defaultPrompts.tools' })).toBeInTheDocument();
+    expect(guidInputMock.setInput).toHaveBeenCalledWith('Analyze the current project.');
+    expect(focus).toHaveBeenCalledOnce();
+    expect(setSelectionRange).toHaveBeenCalledWith(28, 28);
+    expect(sendMock.sendMessageHandler).not.toHaveBeenCalled();
   });
 
   it('does not seed skill defaults from the assistant list while detail is loading', async () => {
@@ -539,5 +527,52 @@ describe('GuidPage', () => {
     expect(agentSelectionMock.setSelectedAcpModel).not.toHaveBeenCalledWith('default', {
       persistPreference: false,
     });
+  });
+});
+
+describe('QuickTaskCards', () => {
+  it('shows four general tasks and supports keyboard selection', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const { default: QuickTaskCards } = await vi.importActual<
+      typeof import('@/renderer/pages/guid/components/QuickTaskCards')
+    >('@/renderer/pages/guid/components/QuickTaskCards');
+
+    render(<QuickTaskCards hasInput={false} hasWorkspace={false} selectedTaskId={null} onSelect={onSelect} />);
+
+    expect(screen.getByText('guid.quickTasks.heading')).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(4);
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: /guid.quickTasks.analyze.titleGeneral/ })).toHaveFocus();
+    await user.keyboard('{Enter}');
+
+    expect(onSelect).toHaveBeenCalledWith('analyze', 'guid.quickTasks.analyze.templateGeneral');
+  });
+
+  it('uses project templates when a workspace is selected', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const { default: QuickTaskCards } = await vi.importActual<
+      typeof import('@/renderer/pages/guid/components/QuickTaskCards')
+    >('@/renderer/pages/guid/components/QuickTaskCards');
+
+    render(<QuickTaskCards hasInput={false} hasWorkspace selectedTaskId={null} onSelect={onSelect} />);
+    await user.click(screen.getByRole('button', { name: /guid.quickTasks.analyze.titleProject/ }));
+
+    expect(onSelect).toHaveBeenCalledWith('analyze', 'guid.quickTasks.analyze.templateProject');
+  });
+
+  it('collapses suggestions while the input contains text and can reveal them again', async () => {
+    const user = userEvent.setup();
+    const { default: QuickTaskCards } = await vi.importActual<
+      typeof import('@/renderer/pages/guid/components/QuickTaskCards')
+    >('@/renderer/pages/guid/components/QuickTaskCards');
+
+    render(<QuickTaskCards hasInput hasWorkspace={false} selectedTaskId='fix' onSelect={vi.fn()} />);
+
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+    await user.click(screen.getByRole('button', { name: 'guid.quickTasks.showSuggestions' }));
+    expect(screen.getAllByRole('button')).toHaveLength(4);
   });
 });

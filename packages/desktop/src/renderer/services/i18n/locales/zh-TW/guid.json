@@ -6,6 +6,39 @@
     "tools": "你有哪些工具？"
   },
   "selectAssistantHint": "選擇一位助手開始任務",
+  "quickTasks": {
+    "heading": "從一個任務開始",
+    "showSuggestions": "查看任務建議",
+    "analyze": {
+      "titleGeneral": "分析內容",
+      "titleProject": "分析專案",
+      "descriptionGeneral": "整理重點並提供下一步建議",
+      "descriptionProject": "整理目錄並提供下一步建議",
+      "templateGeneral": "請分析我接下來提供的內容，整理重點並提供下一步建議。",
+      "templateProject": "請分析目前專案，整理目錄結構、關鍵模組與現況，並提供下一步建議。"
+    },
+    "fix": {
+      "title": "修復問題",
+      "descriptionGeneral": "根據錯誤定位原因並提供方案",
+      "descriptionProject": "根據錯誤定位並修復原因",
+      "templateGeneral": "請根據我接下來提供的錯誤或現象，定位原因並提供修復方案。",
+      "templateProject": "請根據我提供的錯誤，定位目前專案中的根本原因並完成修復。"
+    },
+    "modifyUi": {
+      "title": "修改介面",
+      "descriptionGeneral": "根據描述調整介面內容與樣式",
+      "descriptionProject": "根據描述調整目前專案介面",
+      "templateGeneral": "請根據我接下來提供的描述，調整介面的內容與樣式。",
+      "templateProject": "請根據我的描述調整目前專案的介面，並維持現有設計規範。"
+    },
+    "organize": {
+      "title": "整理檔案",
+      "descriptionGeneral": "分類檔案並識別重複內容",
+      "descriptionProject": "分類檔案並清理重複內容",
+      "templateGeneral": "請協助分類指定檔案，並識別可以清理的重複內容。",
+      "templateProject": "請整理目前專案的檔案結構，分類檔案並清理重複內容。"
+    }
+  },
   "workspace": {
     "workInProject": "在專案中工作",
     "optional": "可選",

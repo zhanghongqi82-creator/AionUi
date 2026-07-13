@@ -6,6 +6,39 @@
     "tools": "어떤 도구가 있나요?"
   },
   "selectAssistantHint": "어시스턴트를 선택하여 작업을 시작하세요",
+  "quickTasks": {
+    "heading": "작업으로 시작하기",
+    "showSuggestions": "작업 제안 보기",
+    "analyze": {
+      "titleGeneral": "내용 분석",
+      "titleProject": "프로젝트 분석",
+      "descriptionGeneral": "핵심을 정리하고 다음 단계 제안",
+      "descriptionProject": "구조를 정리하고 다음 단계 제안",
+      "templateGeneral": "다음에 제공할 내용을 분석하고 핵심을 정리한 뒤 다음 단계를 제안해 주세요.",
+      "templateProject": "현재 프로젝트를 분석하고 디렉터리 구조, 주요 모듈과 현황을 정리한 뒤 다음 단계를 제안해 주세요."
+    },
+    "fix": {
+      "title": "문제 수정",
+      "descriptionGeneral": "오류에서 원인을 찾고 해결 방법 제안",
+      "descriptionProject": "오류 원인을 찾아 수정",
+      "templateGeneral": "다음에 제공할 오류나 현상을 바탕으로 원인을 찾고 해결 방법을 제안해 주세요.",
+      "templateProject": "제공한 오류를 바탕으로 현재 프로젝트의 근본 원인을 찾아 수정해 주세요."
+    },
+    "modifyUi": {
+      "title": "UI 수정",
+      "descriptionGeneral": "설명에 따라 UI 내용과 스타일 조정",
+      "descriptionProject": "설명에 따라 현재 프로젝트 UI 조정",
+      "templateGeneral": "다음에 제공할 설명에 따라 UI 내용과 스타일을 조정해 주세요.",
+      "templateProject": "기존 디자인 규칙을 유지하면서 설명에 따라 현재 프로젝트의 UI를 조정해 주세요."
+    },
+    "organize": {
+      "title": "파일 정리",
+      "descriptionGeneral": "파일을 분류하고 중복 내용 식별",
+      "descriptionProject": "파일을 분류하고 중복 내용 정리",
+      "templateGeneral": "지정한 파일을 분류하고 삭제할 수 있는 중복 내용을 찾아 주세요.",
+      "templateProject": "현재 프로젝트의 파일 구조를 정리하고 관련 파일을 분류하며 중복 내용을 정리해 주세요."
+    }
+  },
   "workspace": {
     "workInProject": "프로젝트에서 작업",
     "optional": "선택사항",

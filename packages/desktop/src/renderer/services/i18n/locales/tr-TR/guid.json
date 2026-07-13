@@ -6,6 +6,39 @@
     "tools": "Hangi araçlara sahipsin?"
   },
   "selectAssistantHint": "Göreve başlamak için bir asistan seçin",
+  "quickTasks": {
+    "heading": "Bir görevle başlayın",
+    "showSuggestions": "Görev önerilerini göster",
+    "analyze": {
+      "titleGeneral": "İçeriği analiz et",
+      "titleProject": "Projeyi analiz et",
+      "descriptionGeneral": "Önemli noktaları çıkar ve sonraki adımları öner",
+      "descriptionProject": "Yapıyı incele ve sonraki adımları öner",
+      "templateGeneral": "Bir sonraki mesajda vereceğim içeriği analiz et, önemli noktaları çıkar ve sonraki adımları öner.",
+      "templateProject": "Mevcut projeyi analiz et; dizin yapısını, temel modülleri ve mevcut durumu inceleyip sonraki adımları öner."
+    },
+    "fix": {
+      "title": "Sorunu düzelt",
+      "descriptionGeneral": "Hatanın nedenini bul ve çözüm öner",
+      "descriptionProject": "Hatanın nedenini bul ve düzelt",
+      "templateGeneral": "Bir sonraki mesajda vereceğim hata veya davranıştan nedeni belirle ve bir çözüm öner.",
+      "templateProject": "Verdiğim hatadan mevcut projedeki temel nedeni bul ve düzelt."
+    },
+    "modifyUi": {
+      "title": "Arayüzü değiştir",
+      "descriptionGeneral": "Açıklamaya göre içeriği ve stili ayarla",
+      "descriptionProject": "Proje arayüzünü açıklamaya göre ayarla",
+      "templateGeneral": "Bir sonraki mesajda vereceğim açıklamaya göre arayüz içeriğini ve stilini ayarla.",
+      "templateProject": "Mevcut tasarım kurallarını koruyarak proje arayüzünü açıklamama göre ayarla."
+    },
+    "organize": {
+      "title": "Dosyaları düzenle",
+      "descriptionGeneral": "Dosyaları grupla ve yinelenen içeriği bul",
+      "descriptionProject": "Dosyaları grupla ve yinelenen içeriği temizle",
+      "templateGeneral": "Belirtilen dosyaları gruplamama ve kaldırılabilecek yinelenen içeriği bulmama yardımcı ol.",
+      "templateProject": "Mevcut projenin dosya yapısını düzenle, ilgili dosyaları grupla ve yinelenen içeriği temizle."
+    }
+  },
   "workspace": {
     "workInProject": "Projede çalış",
     "optional": "İsteğe bağlı",

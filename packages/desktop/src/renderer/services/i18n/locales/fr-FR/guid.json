@@ -6,6 +6,39 @@
     "tools": "De quels outils disposez-vous ?"
   },
   "selectAssistantHint": "Sélectionnez un assistant pour démarrer une tâche",
+  "quickTasks": {
+    "heading": "Commencer par une tâche",
+    "showSuggestions": "Voir les suggestions de tâches",
+    "analyze": {
+      "titleGeneral": "Analyser le contenu",
+      "titleProject": "Analyser le projet",
+      "descriptionGeneral": "Identifier les points clés et suggérer la suite",
+      "descriptionProject": "Examiner la structure et suggérer la suite",
+      "templateGeneral": "Analyse le contenu que je vais fournir, identifie les points clés et suggère les prochaines étapes.",
+      "templateProject": "Analyse le projet actuel, examine sa structure, ses modules clés et son état, puis suggère les prochaines étapes."
+    },
+    "fix": {
+      "title": "Corriger un problème",
+      "descriptionGeneral": "Trouver la cause et proposer une solution",
+      "descriptionProject": "Trouver et corriger la cause d'une erreur",
+      "templateGeneral": "Utilise l'erreur ou le comportement que je vais fournir pour identifier la cause et proposer une solution.",
+      "templateProject": "Utilise l'erreur fournie pour trouver la cause racine dans le projet actuel et la corriger."
+    },
+    "modifyUi": {
+      "title": "Modifier l'interface",
+      "descriptionGeneral": "Ajuster le contenu et le style selon une description",
+      "descriptionProject": "Ajuster l'interface du projet selon une description",
+      "templateGeneral": "Utilise la description que je vais fournir pour ajuster le contenu et le style de l'interface.",
+      "templateProject": "Ajuste l'interface du projet actuel selon ma description tout en respectant ses règles de conception."
+    },
+    "organize": {
+      "title": "Organiser les fichiers",
+      "descriptionGeneral": "Regrouper les fichiers et repérer les doublons",
+      "descriptionProject": "Regrouper les fichiers et nettoyer les doublons",
+      "templateGeneral": "Aide-moi à regrouper les fichiers indiqués et à repérer le contenu dupliqué pouvant être supprimé.",
+      "templateProject": "Organise la structure des fichiers du projet actuel, regroupe les fichiers liés et nettoie le contenu dupliqué."
+    }
+  },
   "workspace": {
     "workInProject": "Travailler dans un projet",
     "optional": "Facultatif",

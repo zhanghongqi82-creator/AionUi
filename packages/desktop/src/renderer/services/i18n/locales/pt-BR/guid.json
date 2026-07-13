@@ -6,6 +6,39 @@
     "tools": "Quais ferramentas você tem?"
   },
   "selectAssistantHint": "Selecione um assistente para iniciar uma tarefa",
+  "quickTasks": {
+    "heading": "Comece com uma tarefa",
+    "showSuggestions": "Ver sugestões de tarefas",
+    "analyze": {
+      "titleGeneral": "Analisar conteúdo",
+      "titleProject": "Analisar projeto",
+      "descriptionGeneral": "Identifique pontos-chave e sugira próximos passos",
+      "descriptionProject": "Revise a estrutura e sugira próximos passos",
+      "templateGeneral": "Analise o conteúdo que fornecerei a seguir, identifique os pontos-chave e sugira os próximos passos.",
+      "templateProject": "Analise o projeto atual, revise sua estrutura, módulos principais e estado e sugira os próximos passos."
+    },
+    "fix": {
+      "title": "Corrigir um problema",
+      "descriptionGeneral": "Encontre a causa e proponha uma solução",
+      "descriptionProject": "Encontre e corrija a causa de um erro",
+      "templateGeneral": "Use o erro ou comportamento que fornecerei para identificar a causa e propor uma solução.",
+      "templateProject": "Use o erro fornecido para encontrar a causa raiz no projeto atual e implementar uma correção."
+    },
+    "modifyUi": {
+      "title": "Modificar a interface",
+      "descriptionGeneral": "Ajuste conteúdo e estilo com base na descrição",
+      "descriptionProject": "Ajuste a interface do projeto com base na descrição",
+      "templateGeneral": "Use a descrição que fornecerei para ajustar o conteúdo e o estilo da interface.",
+      "templateProject": "Ajuste a interface do projeto atual com base na minha descrição e siga suas regras de design."
+    },
+    "organize": {
+      "title": "Organizar arquivos",
+      "descriptionGeneral": "Agrupe arquivos e identifique conteúdo duplicado",
+      "descriptionProject": "Agrupe arquivos e remova conteúdo duplicado",
+      "templateGeneral": "Ajude-me a agrupar os arquivos indicados e identificar conteúdo duplicado que pode ser removido.",
+      "templateProject": "Organize a estrutura de arquivos do projeto atual, agrupe arquivos relacionados e remova conteúdo duplicado."
+    }
+  },
   "workspace": {
     "workInProject": "Trabalhar em um projeto",
     "optional": "Opcional",
