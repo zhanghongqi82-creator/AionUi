@@ -8,6 +8,7 @@ import { ipcBridge } from '@/common';
 import { TEAM_MODE_ENABLED } from '@/common/config/constants';
 import PwaPullToRefresh from '@/renderer/components/layout/PwaPullToRefresh';
 import Titlebar from '@/renderer/components/layout/Titlebar';
+import GlobalCommandPalette from '@/renderer/components/layout/GlobalCommandPalette';
 import { Layout as ArcoLayout, Tooltip } from '@arco-design/web-react';
 import classNames from 'classnames';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
@@ -456,6 +457,7 @@ const Layout: React.FC<{
               </Suspense>
             </ArcoLayout.Content>
           </ArcoLayout>
+          <GlobalCommandPalette />
         </div>
       </NavigationHistoryProvider>
     </LayoutContext.Provider>
