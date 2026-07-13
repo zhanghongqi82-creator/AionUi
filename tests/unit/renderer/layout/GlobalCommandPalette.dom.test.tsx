@@ -165,6 +165,24 @@ describe('GlobalCommandPalette', () => {
     expect(screen.queryByLabelText('Clear')).not.toBeInTheDocument();
   });
 
+  it('starts a new conversation with the displayed global shortcut', () => {
+    render(<GlobalCommandPalette />);
+
+    fireEvent.keyDown(document, { key: 'n', metaKey: true });
+
+    expect(navigateMock).toHaveBeenCalledWith('/guid', { state: { resetAssistant: true } });
+  });
+
+  it('opens a project with the displayed global shortcut', async () => {
+    showOpenMock.mockResolvedValue(['/tmp/project']);
+    render(<GlobalCommandPalette />);
+
+    fireEvent.keyDown(document, { key: 'o', metaKey: true });
+
+    await waitFor(() => expect(showOpenMock).toHaveBeenCalledOnce());
+    expect(navigateMock).toHaveBeenCalledWith('/guid', { state: { workspace: '/tmp/project' } });
+  });
+
   it('uses arrow keys and Enter to execute the active result without auto-selecting a folder', async () => {
     showOpenMock.mockResolvedValue(['/tmp/project']);
     render(<GlobalCommandPalette />);

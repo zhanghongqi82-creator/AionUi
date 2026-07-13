@@ -135,23 +135,56 @@ const GlobalCommandPalette: React.FC = () => {
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
 
+  const startNewConversation = useCallback(() => {
+    navigate('/guid', { state: { resetAssistant: true } });
+  }, [navigate]);
+
+  const openProject = useCallback(async (): Promise<boolean> => {
+    const selected = await ipcBridge.dialog.showOpen.invoke({
+      properties: ['openDirectory', 'createDirectory'],
+    });
+    const workspace = selected?.[0];
+    if (!workspace) return false;
+    addRecentWorkspace(workspace);
+    navigate('/guid', { state: { workspace } });
+    return true;
+  }, [navigate]);
+
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.altKey || event.shiftKey) return;
       if ((event as KeyboardEvent & { isComposing?: boolean }).isComposing) return;
-      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return;
+      if (!(event.metaKey || event.ctrlKey)) return;
+
+      const key = event.key.toLowerCase();
+      if (!['k', 'n', 'o'].includes(key)) return;
       event.preventDefault();
       event.stopPropagation();
-      if (visible) {
-        closePalette(true);
-      } else {
-        openPalette();
+
+      if (key === 'k') {
+        if (visible) {
+          closePalette(true);
+        } else {
+          openPalette();
+        }
+        return;
       }
+
+      closePalette(false);
+      if (key === 'n') {
+        startNewConversation();
+        return;
+      }
+
+      void openProject().catch((error: unknown) => {
+        console.error('[GlobalCommandPalette] Open project shortcut failed:', error);
+        Message.error(t('common.commandPalette.operationFailed'));
+      });
     };
 
     document.addEventListener('keydown', handleShortcut, true);
     return () => document.removeEventListener('keydown', handleShortcut, true);
-  }, [closePalette, openPalette, visible]);
+  }, [closePalette, openPalette, openProject, startNewConversation, t, visible]);
 
   const items = useMemo<CommandPaletteItem[]>(() => {
     const staticItems: CommandPaletteItem[] = [
@@ -165,7 +198,7 @@ const GlobalCommandPalette: React.FC = () => {
         shortcut: newChatKey,
         suggested: true,
         defaultRank: 0,
-        execute: () => navigate('/guid', { state: { resetAssistant: true } }),
+        execute: startNewConversation,
       },
       {
         id: 'action:open-project',
@@ -177,16 +210,7 @@ const GlobalCommandPalette: React.FC = () => {
         shortcut: openProjectKey,
         suggested: true,
         defaultRank: 1,
-        execute: async () => {
-          const selected = await ipcBridge.dialog.showOpen.invoke({
-            properties: ['openDirectory', 'createDirectory'],
-          });
-          const workspace = selected?.[0];
-          if (!workspace) return false;
-          addRecentWorkspace(workspace);
-          navigate('/guid', { state: { workspace } });
-          return true;
-        },
+        execute: openProject,
       },
       {
         id: 'action:create-scheduled-task',
@@ -326,7 +350,18 @@ const GlobalCommandPalette: React.FC = () => {
       ...item,
       lastUsedAt: recentById.get(item.id) ?? item.lastUsedAt,
     }));
-  }, [catalog.assistants, catalog.conversations, localeKey, navigate, newChatKey, openProjectKey, recentEntries, t]);
+  }, [
+    catalog.assistants,
+    catalog.conversations,
+    localeKey,
+    navigate,
+    newChatKey,
+    openProject,
+    openProjectKey,
+    recentEntries,
+    startNewConversation,
+    t,
+  ]);
 
   const trimmedQuery = query.trim();
   const results = useMemo(
