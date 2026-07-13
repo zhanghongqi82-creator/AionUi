@@ -488,6 +488,35 @@ describe('GuidPage', () => {
     });
   });
 
+  it('applies a model selected from the global command palette', async () => {
+    locationMock.state = {
+      selectedAssistantId: 'bare-aionrs',
+      selectedModelId: 'gpt-command-palette',
+    };
+    swrMock.useSWRMock.mockReturnValue({ data: assistantDetailFixture });
+    modelSelectionMock.modelList = [
+      {
+        id: 'provider-openai',
+        name: 'OpenAI',
+        models: ['gpt-command-palette'],
+        use_model: 'gpt-default',
+        enabled: true,
+      },
+    ];
+
+    render(<GuidPage />);
+
+    await vi.waitFor(() => {
+      expect(modelSelectionMock.setCurrentModel).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'provider-openai',
+          use_model: 'gpt-command-palette',
+        }),
+        { persistPreference: false }
+      );
+    });
+  });
+
   it('does not reapply assistant default model over a guid-page model selection', async () => {
     swrMock.useSWRMock.mockReturnValue({ data: assistantDetailFixture });
     resolveGuidAssistantDefaultsMock.mockReturnValue({

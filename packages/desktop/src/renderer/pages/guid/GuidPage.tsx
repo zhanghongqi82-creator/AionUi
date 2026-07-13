@@ -123,9 +123,15 @@ const GuidPage: React.FC = () => {
   const navState = location.state as {
     resetAssistant?: boolean;
     selectedAssistantId?: string;
+    selectedModelId?: string;
   } | null;
   const resetAssistantRequested = navState?.resetAssistant === true;
   const preselectAssistantId = navState?.selectedAssistantId;
+  const preselectModelId = navState?.selectedModelId;
+  const pendingPreselectModelRef = useRef<string | null>(preselectModelId ?? null);
+  if (preselectModelId && pendingPreselectModelRef.current !== preselectModelId) {
+    pendingPreselectModelRef.current = preselectModelId;
+  }
   const agentSelection = useGuidAssistantSelection({
     resetAssistant: resetAssistantRequested,
     preselectAssistantId,
@@ -385,10 +391,35 @@ const GuidPage: React.FC = () => {
     const applyAssistantDefaults = async () => {
       const resolvedDefaults = resolveGuidAssistantDefaults(selectedAssistantDetail);
       const effectiveBackend = agentSelection.selectedAssistantBackend;
-      const shouldApplyDefaultModel = manualModelSelectionAssistantRef.current !== selectedAssistantId;
+      const requestedModelId = pendingPreselectModelRef.current;
+      const shouldApplyDefaultModel =
+        !requestedModelId && manualModelSelectionAssistantRef.current !== selectedAssistantId;
       const shouldApplyDefaultThoughtLevel = manualThoughtLevelSelectionAssistantRef.current !== selectedAssistantId;
 
-      if (shouldApplyDefaultModel && effectiveBackend === 'aionrs') {
+      if (requestedModelId && effectiveBackend === 'aionrs') {
+        const matchedProvider = modelSelection.modelList.find((provider) => provider.models.includes(requestedModelId));
+        if (matchedProvider) {
+          await modelSelection.setCurrentModel(
+            {
+              ...matchedProvider,
+              use_model: requestedModelId,
+            },
+            { persistPreference: false }
+          );
+          pendingPreselectModelRef.current = null;
+          manualModelSelectionAssistantRef.current = selectedAssistantId;
+        }
+      } else if (requestedModelId) {
+        const availableModelIds = new Set([
+          ...(agentSelection.selectedAssistant?.models ?? []),
+          ...(agentSelection.currentAcpCachedModelInfo?.available_models.map((model) => model.id) ?? []),
+        ]);
+        if (availableModelIds.has(requestedModelId)) {
+          agentSelection.setSelectedAcpModel(requestedModelId, { persistPreference: false });
+          pendingPreselectModelRef.current = null;
+          manualModelSelectionAssistantRef.current = selectedAssistantId;
+        }
+      } else if (shouldApplyDefaultModel && effectiveBackend === 'aionrs') {
         if (resolvedDefaults.modelId) {
           const matchedProvider = modelSelection.modelList.find((provider) =>
             provider.models.includes(resolvedDefaults.modelId!)
@@ -453,6 +484,7 @@ const GuidPage: React.FC = () => {
     agentSelection.currentAgentModeOptions,
     agentSelection.currentThoughtLevelOption,
     agentSelection.selectedAssistantBackend,
+    agentSelection.selectedAssistant?.models,
     agentSelection.setSelectedAcpModel,
     agentSelection.setSelectedMode,
     agentSelection.setSelectedThoughtLevelValue,
@@ -540,9 +572,17 @@ const GuidPage: React.FC = () => {
   // next hard reload, the browser would then request '/guid' directly from
   // the dev server (which has no SPA fallback) and 404.
   useEffect(() => {
-    if (!resetAssistantRequested && !preselectAssistantId) return;
+    if (!resetAssistantRequested && !preselectAssistantId && !preselectModelId) return;
     navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
-  }, [resetAssistantRequested, preselectAssistantId, location.pathname, location.search, location.hash, navigate]);
+  }, [
+    resetAssistantRequested,
+    preselectAssistantId,
+    preselectModelId,
+    location.pathname,
+    location.search,
+    location.hash,
+    navigate,
+  ]);
 
   // Agents that use configured model providers instead of ACP probe-based models.
   // Only aionrs now — Gemini runs as a regular ACP backend with ACP-cached models.

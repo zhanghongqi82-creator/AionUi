@@ -7,7 +7,7 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Switch, Message, Empty, Spin, Tooltip } from '@arco-design/web-react';
 import { useLayoutContext } from '@renderer/hooks/context/LayoutContext';
 import { useAllCronJobs } from '@renderer/pages/cron/useCronJobs';
@@ -27,11 +27,19 @@ const ScheduledTasksPage: React.FC = () => {
   const isMobile = layout?.isMobile ?? false;
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { jobs, loading, pauseJob, resumeJob } = useAllCronJobs();
   const { presetAssistants } = useConversationAssistants();
   const logos = useAgentLogos();
   const [createDialogVisible, setCreateDialogVisible] = useState(false);
   const [keepAwake, setKeepAwake] = useState(false);
+
+  useEffect(() => {
+    const navigationState = location.state as { openCreateTask?: boolean } | null;
+    if (!navigationState?.openCreateTask) return;
+    setCreateDialogVisible(true);
+    navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
+  }, [location.hash, location.pathname, location.search, location.state, navigate]);
 
   useEffect(() => {
     setKeepAwake(configService.get('system.keepAwake') ?? false);
