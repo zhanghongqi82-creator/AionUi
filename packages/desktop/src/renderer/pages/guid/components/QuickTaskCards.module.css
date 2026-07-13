@@ -49,8 +49,8 @@
 .card:hover,
 .card:focus-visible {
   color: var(--color-text-1);
-  background: var(--color-primary-light-1);
-  border-color: rgb(var(--primary-6));
+  background: var(--color-fill-2);
+  border-color: var(--color-border-3);
 }
 
 .card:focus-visible {
@@ -60,8 +60,8 @@
 
 .card:active {
   color: var(--color-text-1);
-  background: var(--color-primary-light-2);
-  border-color: rgb(var(--primary-6));
+  background: var(--color-fill-3);
+  border-color: var(--color-border-4);
   transform: translateY(1px);
 }
 
@@ -74,9 +74,14 @@
 .card.selected:hover,
 .card.selected:focus-visible {
   color: var(--color-text-1);
-  background: var(--color-primary-light-1);
-  border-color: rgb(var(--primary-6));
+  background: var(--color-guid-agent-bar, var(--aou-2));
+  border-color: var(--color-border-3);
   opacity: 1;
+}
+
+.card.selected:hover,
+.card.selected:focus-visible {
+  background: var(--aou-3);
 }
 
 .card :global(.arco-btn-content) {
@@ -84,7 +89,7 @@
   align-items: center;
   width: 100%;
   min-width: 0;
-  gap: 12px;
+  gap: 0;
 }
 
 .icon {
@@ -92,7 +97,8 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  color: rgb(var(--primary-6));
+  margin-inline-end: 12px;
+  color: var(--color-text-2);
 }
 
 .content {
