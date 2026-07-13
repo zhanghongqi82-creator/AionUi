@@ -1,7 +1,9 @@
 .root {
   width: 100%;
   margin-top: 18px;
+  padding-inline: 4px;
   animation: fade-in 160ms ease-out;
+  box-sizing: border-box;
 }
 
 .heading {
@@ -14,7 +16,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -25,8 +27,8 @@
   display: flex;
   width: 100%;
   height: auto;
-  min-height: 72px;
-  padding: 12px 14px;
+  min-height: 76px;
+  padding: 14px 18px;
   overflow: hidden;
   color: var(--color-text-2);
   text-align: left;
@@ -35,6 +37,13 @@
   border-color: var(--color-border-2);
   border-radius: 12px;
   box-sizing: border-box;
+  transform: translateY(0);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 100ms ease;
 }
 
 .card:hover,
@@ -49,17 +58,33 @@
   outline-offset: 2px;
 }
 
-.card.selected {
-  background: var(--color-fill-2);
-  border-color: var(--color-border-3);
+.card:active {
+  color: var(--color-text-1);
+  background: var(--color-primary-light-2);
+  border-color: rgb(var(--primary-6));
+  transform: translateY(1px);
+}
+
+.filled .card:not(.selected) {
+  opacity: 0.56;
+  background: var(--color-fill-1);
+}
+
+.card.selected,
+.card.selected:hover,
+.card.selected:focus-visible {
+  color: var(--color-text-1);
+  background: var(--color-primary-light-1);
+  border-color: rgb(var(--primary-6));
+  opacity: 1;
 }
 
 .card :global(.arco-btn-content) {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   min-width: 0;
-  gap: 10px;
+  gap: 12px;
 }
 
 .icon {
@@ -67,7 +92,6 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  margin-top: 1px;
   color: rgb(var(--primary-6));
 }
 
@@ -77,6 +101,7 @@
   flex-direction: column;
   min-width: 0;
   gap: 3px;
+  justify-content: center;
 }
 
 .title {
@@ -133,13 +158,25 @@
 }
 
 @media (max-width: 520px) {
+  .root {
+    padding-inline: 0;
+  }
+
   .grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card {
+    padding-inline: 16px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .root {
     animation: none;
+  }
+
+  .card {
+    transition: none;
   }
 }

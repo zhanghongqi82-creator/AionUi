@@ -284,9 +284,7 @@ const GuidPage: React.FC = () => {
   const handleInputChange = useCallback(
     (value: string) => {
       guidInput.setInput(value);
-      if (!value.trim()) {
-        setSelectedQuickTaskId(null);
-      }
+      setSelectedQuickTaskId(null);
     },
     [guidInput.setInput]
   );

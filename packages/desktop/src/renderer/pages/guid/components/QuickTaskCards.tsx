@@ -72,7 +72,9 @@ const QuickTaskCards: React.FC<QuickTaskCardsProps> = ({ hasInput, hasWorkspace,
     ];
   }, [hasWorkspace, t]);
 
-  if (hasInput && !showWhileTyping) {
+  const hasFilledTask = hasInput && selectedTaskId !== null;
+
+  if (hasInput && !hasFilledTask && !showWhileTyping) {
     return (
       <div className={styles.collapsed}>
         <Button type='text' className={styles.showButton} onClick={() => setShowWhileTyping(true)}>
@@ -83,7 +85,11 @@ const QuickTaskCards: React.FC<QuickTaskCardsProps> = ({ hasInput, hasWorkspace,
   }
 
   return (
-    <section className={styles.root} aria-labelledby='guid-quick-task-heading'>
+    <section
+      className={`${styles.root} ${hasFilledTask ? styles.filled : ''}`}
+      aria-labelledby='guid-quick-task-heading'
+      data-state={hasFilledTask ? 'filled' : 'default'}
+    >
       <div id='guid-quick-task-heading' className={styles.heading}>
         {t('guid.quickTasks.heading')}
       </div>
@@ -94,6 +100,8 @@ const QuickTaskCards: React.FC<QuickTaskCardsProps> = ({ hasInput, hasWorkspace,
             type='outline'
             className={`${styles.card} ${selectedTaskId === task.id ? styles.selected : ''}`}
             aria-label={`${task.title}: ${task.description}`}
+            aria-pressed={selectedTaskId === task.id}
+            data-state={selectedTaskId === task.id ? 'filled' : hasFilledTask ? 'muted' : 'default'}
             onClick={() => onSelect(task.id, task.template)}
           >
             <span className={styles.icon} aria-hidden='true'>

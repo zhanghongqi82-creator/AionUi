@@ -563,13 +563,30 @@ describe('QuickTaskCards', () => {
     expect(onSelect).toHaveBeenCalledWith('analyze', 'guid.quickTasks.analyze.templateProject');
   });
 
-  it('collapses suggestions while the input contains text and can reveal them again', async () => {
-    const user = userEvent.setup();
+  it('keeps the filled task visible and marks the remaining cards as muted', async () => {
     const { default: QuickTaskCards } = await vi.importActual<
       typeof import('@/renderer/pages/guid/components/QuickTaskCards')
     >('@/renderer/pages/guid/components/QuickTaskCards');
 
     render(<QuickTaskCards hasInput hasWorkspace={false} selectedTaskId='fix' onSelect={vi.fn()} />);
+
+    const selectedCard = screen.getByRole('button', { name: /guid.quickTasks.fix.title/ });
+    expect(screen.getAllByRole('button')).toHaveLength(4);
+    expect(selectedCard).toHaveAttribute('aria-pressed', 'true');
+    expect(selectedCard).toHaveAttribute('data-state', 'filled');
+    expect(screen.getByRole('button', { name: /guid.quickTasks.analyze.titleGeneral/ })).toHaveAttribute(
+      'data-state',
+      'muted'
+    );
+  });
+
+  it('collapses suggestions for manually entered text and can reveal them again', async () => {
+    const user = userEvent.setup();
+    const { default: QuickTaskCards } = await vi.importActual<
+      typeof import('@/renderer/pages/guid/components/QuickTaskCards')
+    >('@/renderer/pages/guid/components/QuickTaskCards');
+
+    render(<QuickTaskCards hasInput hasWorkspace={false} selectedTaskId={null} onSelect={vi.fn()} />);
 
     expect(screen.getAllByRole('button')).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: 'guid.quickTasks.showSuggestions' }));
