@@ -1,6 +1,25 @@
 {
   "fileChanges": "ファイル変更",
   "fileChangesCount": "{{count}} 件のファイル変更",
+  "fileChangeSummary": {
+    "title": "{{count}} 件のファイルを変更",
+    "partialFailure": "{{changed}} 件のファイルを変更、{{failed}} 件が失敗",
+    "lineChanges": "行の変更",
+    "viewChanges": "変更を表示",
+    "expand": "ファイル一覧を展開",
+    "collapse": "ファイル一覧を折りたたむ",
+    "organizing": "ファイル変更を整理しています...",
+    "fileLimit": "{{total}} 件のファイルを変更 · 最初の {{visible}} 件を表示",
+    "openDiff": "{{file}} の差分を開く",
+    "previewFile": "{{file}} をプレビュー",
+    "distribution": {
+      "added": "追加 {{count}}",
+      "modified": "変更 {{count}}",
+      "deleted": "削除 {{count}}",
+      "conflicted": "競合 {{count}}"
+    },
+    "status": { "added": "追加", "modified": "変更", "deleted": "削除", "conflicted": "競合" }
+  },
   "conversationInProgress": "現在、会話中です...",
   "confirm": "確認",
   "canceledExecution": "実行がキャンセルされました",

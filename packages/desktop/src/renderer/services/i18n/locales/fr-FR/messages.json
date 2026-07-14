@@ -1,6 +1,25 @@
 {
   "fileChanges": "Modifications de fichiers",
   "fileChangesCount": "{{count}} modification(s) de fichiers",
+  "fileChangeSummary": {
+    "title": "{{count}} fichiers modifiés",
+    "partialFailure": "{{changed}} fichiers modifiés, {{failed}} en échec",
+    "lineChanges": "Modifications de lignes",
+    "viewChanges": "Voir les modifications",
+    "expand": "Développer la liste des fichiers",
+    "collapse": "Réduire la liste des fichiers",
+    "organizing": "Organisation des modifications de fichiers...",
+    "fileLimit": "{{total}} fichiers modifiés · affichage des {{visible}} premiers",
+    "openDiff": "Ouvrir le diff de {{file}}",
+    "previewFile": "Prévisualiser {{file}}",
+    "distribution": {
+      "added": "{{count}} ajoutés",
+      "modified": "{{count}} modifiés",
+      "deleted": "{{count}} supprimés",
+      "conflicted": "{{count}} en conflit"
+    },
+    "status": { "added": "Ajouté", "modified": "Modifié", "deleted": "Supprimé", "conflicted": "Conflit" }
+  },
   "conversationInProgress": "Une conversation est en cours...",
   "confirm": "Confirmer",
   "canceledExecution": "Exécution annulée",

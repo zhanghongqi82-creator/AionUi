@@ -1,9 +1,11 @@
 import { blurActiveElement } from '@/renderer/utils/ui/focus';
 import {
   WORKSPACE_HAS_FILES_EVENT,
+  WORKSPACE_OPEN_CHANGES_EVENT,
   WORKSPACE_TOGGLE_EVENT,
   dispatchWorkspaceStateEvent,
   type WorkspaceHasFilesDetail,
+  type WorkspaceOpenChangesDetail,
 } from '@/renderer/utils/workspace/workspaceEvents';
 import { useEffect, useRef, useState } from 'react';
 
@@ -97,6 +99,18 @@ export function useWorkspaceCollapse({
       window.removeEventListener(WORKSPACE_TOGGLE_EVENT, handleWorkspaceToggle);
     };
   }, [workspaceEnabled, preferenceKey]);
+
+  // Explicit summary actions always reveal the workspace, including on mobile.
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const handleOpenChanges = (event: Event) => {
+      const detail = (event as CustomEvent<WorkspaceOpenChangesDetail>).detail;
+      if (detail?.conversation_id && detail.conversation_id !== conversation_id) return;
+      if (workspaceEnabled) setRightSiderCollapsed(false);
+    };
+    window.addEventListener(WORKSPACE_OPEN_CHANGES_EVENT, handleOpenChanges);
+    return () => window.removeEventListener(WORKSPACE_OPEN_CHANGES_EVENT, handleOpenChanges);
+  }, [conversation_id, workspaceEnabled]);
 
   // Auto expand/collapse workspace panel based on files state (user preference takes priority)
   useEffect(() => {

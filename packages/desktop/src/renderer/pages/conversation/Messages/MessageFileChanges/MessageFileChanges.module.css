@@ -1,0 +1,23 @@
+.card {
+  border-color: var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-1);
+}
+
+.card :global(.arco-card-body) {
+  padding: 16px;
+}
+
+.fileButton {
+  flex: 1;
+  height: auto;
+  min-height: 40px;
+  padding: 8px 4px;
+  border-radius: 8px;
+}
+
+@media (max-width: 480px) {
+  .card :global(.arco-card-body) {
+    padding: 12px;
+  }
+}

@@ -48,10 +48,19 @@ import type { WriteFileResult } from './types';
 import { useAutoScroll } from './useAutoScroll';
 import { useAutoPreviewOfficeFiles } from '@/renderer/hooks/file/useAutoPreviewOfficeFiles';
 import SelectionReplyButton from './components/SelectionReplyButton';
+import { createTwoFilesPatch } from 'diff';
 
 type IMessageVO =
   | TMessage
-  | { type: 'file_summary'; id: string; diffs: FileChangeInfo[]; sourceMessageIds: string[]; created_at: number }
+  | {
+      type: 'file_summary';
+      id: string;
+      diffs: FileChangeInfo[];
+      sourceMessageIds: string[];
+      created_at: number;
+      isProcessing: boolean;
+      failedFiles: number;
+    }
   | {
       type: 'tool_summary';
       id: string;
@@ -106,6 +115,17 @@ const highlightStyle: React.CSSProperties = {
 };
 
 const getUnhandledMessageType = (_message: never): string => 'unknown';
+
+const OFFICE_DOCUMENT_PATTERN = /\.(?:docx|xlsx|pptx)$/i;
+const OFFICE_MUTATION_PATTERN =
+  /(?:^|[;&|]\s*)(?:[^\s;&|]*\/)?officecli\s+(add|set|remove|create|batch|raw-set)\s+(?:"([^"]+)"|'([^']+)'|([^\s;&|]+))/i;
+
+const parseOfficeMutation = (command: string): { path: string; status: FileChangeInfo['status'] } | null => {
+  const match = command.match(OFFICE_MUTATION_PATTERN);
+  const path = match?.[2] || match?.[3] || match?.[4];
+  if (!path || !OFFICE_DOCUMENT_PATTERN.test(path)) return null;
+  return { path, status: match[1].toLowerCase() === 'create' ? 'added' : 'modified' };
+};
 
 // Image preview context
 export const ImagePreviewContext = createContext<{ inPreviewGroup: boolean }>({ inPreviewGroup: false });
@@ -289,22 +309,29 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     let diffsSourceMessageIds: string[] = [];
     let toolList: Array<IMessageToolGroup | IMessageAcpToolCall | IMessageToolCall> = [];
     let toolSourceMessageIds: string[] = [];
+    let turnLastCreatedAt = 0;
+    let failedFiles = 0;
 
-    const pushFileDffChanges = (changes: FileChangeInfo, sourceMessageId: string, created_at: number) => {
-      if (!diffsChanges.length) {
-        diffsSourceMessageIds = [];
+    const collectFileChanges = (changes: FileChangeInfo[], sourceMessageId: string) => {
+      if (!changes.length) return;
+      diffsChanges.push(...changes);
+      if (!diffsSourceMessageIds.includes(sourceMessageId)) diffsSourceMessageIds.push(sourceMessageId);
+    };
+    const flushFileChanges = (pending: boolean) => {
+      if (diffsChanges.length) {
         result.push({
           type: 'file_summary',
-          id: `summary-${sourceMessageId}`,
-          diffs: diffsChanges,
-          sourceMessageIds: diffsSourceMessageIds,
-          created_at,
+          id: `summary-${diffsSourceMessageIds[0]}`,
+          diffs: [...diffsChanges],
+          sourceMessageIds: [...diffsSourceMessageIds],
+          created_at: turnLastCreatedAt,
+          isProcessing: pending,
+          failedFiles,
         });
       }
-      diffsChanges.push(changes);
-      diffsSourceMessageIds.push(sourceMessageId);
-      toolList = [];
-      toolSourceMessageIds = [];
+      diffsChanges = [];
+      diffsSourceMessageIds = [];
+      failedFiles = 0;
     };
     const pushToolList = (message: IMessageToolGroup | IMessageAcpToolCall | IMessageToolCall) => {
       if (!toolList.length) {
@@ -319,8 +346,6 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       }
       toolList.push(message);
       toolSourceMessageIds.push(message.id);
-      diffsChanges = [];
-      diffsSourceMessageIds = [];
     };
 
     for (let i = 0, len = list.length; i < len; i++) {
@@ -328,43 +353,100 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       // Skip hidden and available_commands messages
       if (message.hidden) continue;
       if (message.type === 'available_commands') continue;
+      if (message.position === 'right') {
+        toolList = [];
+        toolSourceMessageIds = [];
+        flushFileChanges(false);
+        turnLastCreatedAt = 0;
+        result.push(message);
+        continue;
+      }
+      turnLastCreatedAt = Math.max(turnLastCreatedAt, message.created_at ?? 0);
       if (message.type === 'tool_group') {
-        if (message.content.length === 1) {
-          const writeFileResults = message.content
-            .filter(
-              (item) =>
-                item.name === 'WriteFile' &&
-                item.result_display &&
-                typeof item.result_display === 'object' &&
-                'file_diff' in item.result_display
-            )
-            .map((item) => item.result_display as WriteFileResult);
-          if (writeFileResults.length && writeFileResults[0].file_diff) {
-            pushFileDffChanges(
-              parseDiff(writeFileResults[0].file_diff, writeFileResults[0].file_name),
-              message.id,
-              message.created_at ?? 0
-            );
-            continue;
-          }
-        }
-        pushToolList(message);
+        failedFiles += message.content.filter((item) => item.name === 'WriteFile' && item.status === 'Error').length;
+        const writeFileResults = message.content
+          .filter(
+            (item) =>
+              item.name === 'WriteFile' &&
+              item.result_display &&
+              typeof item.result_display === 'object' &&
+              'file_diff' in item.result_display
+          )
+          .map((item) => item.result_display as WriteFileResult)
+          .filter((item) => Boolean(item.file_diff));
+        collectFileChanges(
+          writeFileResults.map((item) => parseDiff(item.file_diff, item.file_name)),
+          message.id
+        );
+        if (writeFileResults.length !== message.content.length) pushToolList(message);
         continue;
       }
       if (message.type === 'acp_tool_call') {
+        const update = message.content?.update;
+        if (update?.status === 'failed' && update.kind === 'edit') failedFiles += 1;
+        const acpChanges = (update?.content ?? []).flatMap((item) => {
+          if (item.type !== 'diff') return [];
+          const path = item.path || 'Unknown file';
+          const fileName = path.split(/[/\\]/).pop() || path;
+          const diff = createTwoFilesPatch(fileName, fileName, item.old_text || '', item.new_text || '', '', '', {
+            context: 3,
+          });
+          const change = parseDiff(diff, path);
+          if (!item.old_text && item.new_text) change.status = 'added';
+          if (item.old_text && !item.new_text) change.status = 'deleted';
+          return [change];
+        });
+        collectFileChanges(acpChanges, message.id);
         pushToolList(message);
         continue;
       }
       if (message.type === 'tool_call') {
+        const toolInput = message.content.input ?? message.content.args;
+        const filePath = typeof toolInput?.file_path === 'string' ? toolInput.file_path : undefined;
+        const isEditTool = message.content.name === 'Edit' || message.content.name === 'replace';
+        if (isEditTool && message.content.status === 'error') failedFiles += 1;
+        if (isEditTool && message.content.status === 'completed' && filePath) {
+          const oldString = typeof toolInput?.old_string === 'string' ? toolInput.old_string : undefined;
+          const newString = typeof toolInput?.new_string === 'string' ? toolInput.new_string : undefined;
+          if (oldString !== undefined && newString !== undefined) {
+            const fileName = filePath.split(/[/\\]/).pop() || filePath;
+            collectFileChanges(
+              [
+                parseDiff(
+                  createTwoFilesPatch(fileName, fileName, oldString, newString, '', '', { context: 3 }),
+                  filePath
+                ),
+              ],
+              message.id
+            );
+          }
+        }
+        const command = typeof toolInput?.cmd === 'string' ? toolInput.cmd : undefined;
+        const officeMutation = command ? parseOfficeMutation(command) : null;
+        if (officeMutation && message.content.status === 'error') failedFiles += 1;
+        if (officeMutation && message.content.status === 'completed') {
+          collectFileChanges(
+            [
+              {
+                file_name: officeMutation.path.split(/[/\\]/).pop() || officeMutation.path,
+                fullPath: officeMutation.path,
+                insertions: 0,
+                deletions: 0,
+                diff: '',
+                status: officeMutation.status,
+              },
+            ],
+            message.id
+          );
+        }
         pushToolList(message);
         continue;
       }
       toolList = [];
       toolSourceMessageIds = [];
-      diffsChanges = [];
-      diffsSourceMessageIds = [];
       result.push(message);
     }
+    flushFileChanges(isProcessing);
     const visibleArtifacts = artifacts
       .filter((artifact) => {
         if (artifact.kind === 'cron_trigger') return artifact.status === 'active';
@@ -381,7 +463,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     return [...result, ...visibleArtifacts].toSorted(
       (a, b) => getProcessedItemCreatedAt(a) - getProcessedItemCreatedAt(b)
     );
-  }, [artifacts, list]);
+  }, [artifacts, isProcessing, list]);
 
   // An AI reply can be split into several messages (thinking / multiple text /
   // tool blocks). The hover copy + timestamp row should appear once per turn,
@@ -615,7 +697,13 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           className={`${rowWidthClass} min-w-0 message-item px-8px m-t-10px ${item.type}`}
           style={highlighted ? highlightStyle : undefined}
         >
-          {item.type === 'file_summary' && <MessageFileChanges diffsChanges={item.diffs} />}
+          {item.type === 'file_summary' && (
+            <MessageFileChanges
+              diffsChanges={item.diffs}
+              isProcessing={item.isProcessing}
+              failedFiles={item.failedFiles}
+            />
+          )}
           {item.type === 'tool_summary' && <MessageToolGroupSummary messages={item.messages}></MessageToolGroupSummary>}
         </div>
       );

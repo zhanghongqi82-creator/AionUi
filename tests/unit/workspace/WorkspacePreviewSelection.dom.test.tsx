@@ -188,7 +188,7 @@ vi.mock('@/renderer/pages/conversation/Workspace/components/WorkspaceToolbar', (
 }));
 
 vi.mock('@/renderer/pages/conversation/Workspace/components/WorkspaceTabBar', () => ({
-  default: () => <div data-testid='workspace-tabbar' />,
+  default: ({ activeTab }: { activeTab: string }) => <div data-testid='workspace-tabbar'>{activeTab}</div>,
 }));
 
 vi.mock('@/renderer/pages/conversation/Workspace/components/WorkspaceContextMenu', () => ({
@@ -249,5 +249,16 @@ describe('ChatWorkspace preview selection', () => {
       },
     });
     expect(mocks.handlePreviewFile).toHaveBeenCalledWith(selectedFile);
+  });
+
+  it('switches to changes when a file summary requests review', () => {
+    render(<ChatWorkspace conversation_id='conversation-1' workspace='/workspace' />);
+    expect(screen.getByTestId('workspace-tabbar')).toHaveTextContent('files');
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent('aionui-workspace-open-changes'));
+    });
+
+    expect(screen.getByTestId('workspace-tabbar')).toHaveTextContent('changes');
   });
 });

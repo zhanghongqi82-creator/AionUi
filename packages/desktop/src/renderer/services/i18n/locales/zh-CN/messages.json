@@ -1,6 +1,25 @@
 {
   "fileChanges": "文件变更",
   "fileChangesCount": "{{count}} 个文件变更",
+  "fileChangeSummary": {
+    "title": "修改 {{count}} 个文件",
+    "partialFailure": "{{changed}} 个文件已修改，{{failed}} 个文件失败",
+    "lineChanges": "增删行数",
+    "viewChanges": "查看变更",
+    "expand": "展开文件列表",
+    "collapse": "收起文件列表",
+    "organizing": "正在整理文件变更...",
+    "fileLimit": "修改 {{total}} 个文件 · 显示前 {{visible}} 个",
+    "openDiff": "打开 {{file}} 的差异",
+    "previewFile": "预览 {{file}}",
+    "distribution": {
+      "added": "新增 {{count}}",
+      "modified": "修改 {{count}}",
+      "deleted": "删除 {{count}}",
+      "conflicted": "冲突 {{count}}"
+    },
+    "status": { "added": "新增", "modified": "修改", "deleted": "删除", "conflicted": "冲突" }
+  },
   "conversationInProgress": "当前正在进行对话中...",
   "confirm": "确认",
   "canceledExecution": "已取消执行",

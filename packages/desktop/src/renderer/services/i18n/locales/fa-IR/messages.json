@@ -1,6 +1,25 @@
 {
   "fileChanges": "تغییرات فایل",
   "fileChangesCount": "{{count}} تغییر فایل",
+  "fileChangeSummary": {
+    "title": "{{count}} فایل تغییر کرد",
+    "partialFailure": "{{changed}} فایل تغییر کرد، {{failed}} فایل ناموفق بود",
+    "lineChanges": "تغییرات خطوط",
+    "viewChanges": "مشاهده تغییرات",
+    "expand": "باز کردن فهرست فایل‌ها",
+    "collapse": "بستن فهرست فایل‌ها",
+    "organizing": "در حال مرتب‌سازی تغییرات فایل...",
+    "fileLimit": "{{total}} فایل تغییر کرد · نمایش {{visible}} فایل اول",
+    "openDiff": "باز کردن تفاوت‌های {{file}}",
+    "previewFile": "پیش‌نمایش {{file}}",
+    "distribution": {
+      "added": "{{count}} افزوده‌شده",
+      "modified": "{{count}} ویرایش‌شده",
+      "deleted": "{{count}} حذف‌شده",
+      "conflicted": "{{count}} دارای تداخل"
+    },
+    "status": { "added": "افزوده‌شده", "modified": "ویرایش‌شده", "deleted": "حذف‌شده", "conflicted": "تداخل" }
+  },
   "conversationInProgress": "در حال حاضر گفتگویی در جریان است...",
   "confirm": "تأیید",
   "canceledExecution": "اجرا لغو شد",
