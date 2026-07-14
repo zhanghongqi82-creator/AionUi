@@ -1,6 +1,25 @@
 {
   "fileChanges": "Зміни у файлах",
   "fileChangesCount": "Зміни у файлах: {{count}}",
+  "fileChangeSummary": {
+    "title": "Змінено файлів: {{count}}",
+    "partialFailure": "Змінено файлів: {{changed}}, з помилкою: {{failed}}",
+    "lineChanges": "Зміни рядків",
+    "viewChanges": "Переглянути зміни",
+    "expand": "Розгорнути список файлів",
+    "collapse": "Згорнути список файлів",
+    "organizing": "Упорядкування змін файлів...",
+    "fileLimit": "Змінено файлів: {{total}} · показано перші {{visible}}",
+    "openDiff": "Відкрити різницю для {{file}}",
+    "previewFile": "Переглянути {{file}}",
+    "distribution": {
+      "added": "додано: {{count}}",
+      "modified": "змінено: {{count}}",
+      "deleted": "видалено: {{count}}",
+      "conflicted": "конфліктів: {{count}}"
+    },
+    "status": { "added": "Додано", "modified": "Змінено", "deleted": "Видалено", "conflicted": "Конфлікт" }
+  },
   "conversationInProgress": "Наразі триває діалог...",
   "confirm": "Підтвердити",
   "canceledExecution": "Виконання скасовано",

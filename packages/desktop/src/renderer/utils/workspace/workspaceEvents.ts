@@ -1,9 +1,14 @@
 export const WORKSPACE_TOGGLE_EVENT = 'aionui-workspace-toggle';
 export const WORKSPACE_STATE_EVENT = 'aionui-workspace-state';
 export const WORKSPACE_HAS_FILES_EVENT = 'aionui-workspace-has-files';
+export const WORKSPACE_OPEN_CHANGES_EVENT = 'aionui-workspace-open-changes';
 
 export interface WorkspaceStateDetail {
   collapsed: boolean;
+}
+
+export interface WorkspaceOpenChangesDetail {
+  conversation_id?: string;
 }
 
 export interface WorkspaceHasFilesDetail {
@@ -24,6 +29,13 @@ export interface WorkspaceHasFilesDetail {
 export function dispatchWorkspaceToggleEvent() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(WORKSPACE_TOGGLE_EVENT));
+}
+
+export function dispatchWorkspaceOpenChangesEvent(conversation_id?: string) {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent<WorkspaceOpenChangesDetail>(WORKSPACE_OPEN_CHANGES_EVENT, { detail: { conversation_id } })
+  );
 }
 
 export function dispatchWorkspaceStateEvent(collapsed: boolean) {

@@ -131,8 +131,23 @@ vi.mock('@/renderer/pages/conversation/Messages/components/MessageToolGroupSumma
 
 vi.mock('@/renderer/pages/conversation/Messages/MessageFileChanges', () => ({
   __esModule: true,
-  default: () => <div>file_changes</div>,
-  parseDiff: vi.fn(),
+  default: ({ isProcessing, failedFiles }: { isProcessing?: boolean; failedFiles?: number }) => (
+    <div
+      data-testid='file-changes'
+      data-processing={String(Boolean(isProcessing))}
+      data-failed-files={String(failedFiles ?? 0)}
+    >
+      file_changes
+    </div>
+  ),
+  parseDiff: vi.fn((_diff: string, fileName: string) => ({
+    file_name: fileName,
+    fullPath: fileName,
+    insertions: 1,
+    deletions: 0,
+    diff: 'diff',
+    status: 'modified',
+  })),
 }));
 
 vi.mock('@/renderer/pages/conversation/Messages/components/SelectionReplyButton', () => ({
@@ -268,6 +283,146 @@ describe('MessageList', () => {
     expect(screen.getByTestId('msgtext-text-a').getAttribute('data-copy-row')).toBe('true');
     // The in-progress final turn withholds its row until streaming ends.
     expect(screen.getByTestId('msgtext-text-b').getAttribute('data-copy-row')).toBe('false');
+  });
+
+  it('binds file changes to the bottom of the Agent turn that produced them', () => {
+    const messages = [
+      {
+        id: 'write-1',
+        type: 'tool_group',
+        position: 'left',
+        content: [
+          {
+            call_id: 'call-1',
+            name: 'WriteFile',
+            description: 'write file',
+            render_output_as_markdown: false,
+            status: 'Success',
+            result_display: { file_name: 'src/app.ts', file_diff: '+new line' },
+          },
+          {
+            call_id: 'call-2',
+            name: 'WriteFile',
+            description: 'write failed',
+            render_output_as_markdown: false,
+            status: 'Error',
+          },
+        ],
+        created_at: 1,
+      },
+      { id: 'final-1', type: 'text', position: 'left', content: { content: 'final answer' }, created_at: 2 },
+      { id: 'user-2', type: 'text', position: 'right', content: { content: 'next question' }, created_at: 3 },
+    ] as unknown as IMessageText[];
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={messages}>{children}</Wrapper>,
+    });
+
+    const finalAnswer = screen.getByText('final answer');
+    const summary = screen.getByTestId('file-changes');
+    const nextQuestion = screen.getByText('next question');
+    expect(finalAnswer.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary.compareDocumentPosition(nextQuestion) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary).toHaveAttribute('data-processing', 'false');
+    expect(summary).toHaveAttribute('data-failed-files', '1');
+  });
+
+  it('marks the final turn summary as processing while the Agent is running', () => {
+    mockIsProcessing = true;
+    const messages = [
+      {
+        id: 'write-1',
+        type: 'tool_group',
+        position: 'left',
+        content: [
+          {
+            call_id: 'call-1',
+            name: 'WriteFile',
+            description: 'write file',
+            render_output_as_markdown: false,
+            status: 'Success',
+            result_display: { file_name: 'src/app.ts', file_diff: '+new line' },
+          },
+        ],
+        created_at: 1,
+      },
+    ] as unknown as IMessageText[];
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={messages}>{children}</Wrapper>,
+    });
+
+    expect(screen.getByTestId('file-changes')).toHaveAttribute('data-processing', 'true');
+  });
+
+  it('summarizes AionRs Edit tool calls that carry old and new strings', () => {
+    const messages = [
+      {
+        id: 'edit-1',
+        type: 'tool_call',
+        position: 'left',
+        content: {
+          call_id: 'call-1',
+          name: 'Edit',
+          status: 'completed',
+          input: {
+            file_path: '/tmp/preview.txt',
+            old_string: 'before',
+            new_string: 'before\nafter',
+          },
+        },
+        created_at: 1,
+      },
+      { id: 'final-1', type: 'text', position: 'left', content: { content: 'done' }, created_at: 2 },
+    ] as unknown as IMessageText[];
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={messages}>{children}</Wrapper>,
+    });
+
+    expect(screen.getByTestId('file-changes')).toHaveAttribute('data-processing', 'false');
+    expect(screen.getByText('done').compareDocumentPosition(screen.getByTestId('file-changes'))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+  });
+
+  it('summarizes successful Office CLI mutations without treating read commands as changes', () => {
+    const messages = [
+      {
+        id: 'office-view',
+        type: 'tool_call',
+        position: 'left',
+        content: {
+          call_id: 'call-view',
+          name: 'ExecCommand',
+          status: 'completed',
+          input: { cmd: 'officecli view "/tmp/resume.docx" text' },
+        },
+        created_at: 1,
+      },
+      {
+        id: 'office-add',
+        type: 'tool_call',
+        position: 'left',
+        content: {
+          call_id: 'call-add',
+          name: 'ExecCommand',
+          status: 'completed',
+          input: { cmd: 'export PATH="$HOME/.local/bin:$PATH" && officecli add "/tmp/resume.docx" /body' },
+        },
+        created_at: 2,
+      },
+      { id: 'final-1', type: 'text', position: 'left', content: { content: 'office done' }, created_at: 3 },
+    ] as unknown as IMessageText[];
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={messages}>{children}</Wrapper>,
+    });
+
+    expect(screen.getAllByTestId('file-changes')).toHaveLength(1);
+    expect(screen.getByText('office done').compareDocumentPosition(screen.getByTestId('file-changes'))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
   });
 
   it('renders the empty slot when there are no messages', () => {

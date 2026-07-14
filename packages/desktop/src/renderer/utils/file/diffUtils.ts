@@ -102,7 +102,22 @@ export interface FileChangeInfo {
   deletions: number;
   /** Raw diff content */
   diff: string;
+  /** Semantic change type inferred from the diff */
+  status: 'added' | 'modified' | 'deleted' | 'conflicted';
 }
+
+const inferFileChangeStatus = (diff: string): FileChangeInfo['status'] => {
+  if (diff.includes('<<<<<<<') && diff.includes('=======') && diff.includes('>>>>>>>')) {
+    return 'conflicted';
+  }
+  if (diff.includes('new file mode') || diff.split('\n').some((line) => line === '--- /dev/null')) {
+    return 'added';
+  }
+  if (diff.includes('deleted file mode') || diff.split('\n').some((line) => line === '+++ /dev/null')) {
+    return 'deleted';
+  }
+  return 'modified';
+};
 
 /**
  * Parse unified diff format, extract file info and change statistics
@@ -166,5 +181,6 @@ export const parseDiff = (diff: string, file_nameHint?: string): FileChangeInfo 
     insertions,
     deletions,
     diff,
+    status: inferFileChangeStatus(diff),
   };
 };

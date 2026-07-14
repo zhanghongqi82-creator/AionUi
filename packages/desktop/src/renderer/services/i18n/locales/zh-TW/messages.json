@@ -1,6 +1,25 @@
 {
   "fileChanges": "檔案變更",
   "fileChangesCount": "{{count}} 個檔案變更",
+  "fileChangeSummary": {
+    "title": "修改 {{count}} 個檔案",
+    "partialFailure": "{{changed}} 個檔案已修改，{{failed}} 個檔案失敗",
+    "lineChanges": "增刪行數",
+    "viewChanges": "查看變更",
+    "expand": "展開檔案列表",
+    "collapse": "收合檔案列表",
+    "organizing": "正在整理檔案變更...",
+    "fileLimit": "修改 {{total}} 個檔案 · 顯示前 {{visible}} 個",
+    "openDiff": "開啟 {{file}} 的差異",
+    "previewFile": "預覽 {{file}}",
+    "distribution": {
+      "added": "新增 {{count}}",
+      "modified": "修改 {{count}}",
+      "deleted": "刪除 {{count}}",
+      "conflicted": "衝突 {{count}}"
+    },
+    "status": { "added": "新增", "modified": "修改", "deleted": "刪除", "conflicted": "衝突" }
+  },
   "conversationInProgress": "目前正在進行對話...",
   "confirm": "確認",
   "canceledExecution": "已取消執行",

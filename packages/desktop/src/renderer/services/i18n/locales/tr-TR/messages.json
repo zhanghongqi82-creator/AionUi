@@ -1,6 +1,25 @@
 {
   "fileChanges": "Dosya Değişiklikleri",
   "fileChangesCount": "{{count}} Dosya Değişikliği",
+  "fileChangeSummary": {
+    "title": "{{count}} dosya değiştirildi",
+    "partialFailure": "{{changed}} dosya değiştirildi, {{failed}} dosya başarısız",
+    "lineChanges": "Satır değişiklikleri",
+    "viewChanges": "Değişiklikleri görüntüle",
+    "expand": "Dosya listesini genişlet",
+    "collapse": "Dosya listesini daralt",
+    "organizing": "Dosya değişiklikleri düzenleniyor...",
+    "fileLimit": "{{total}} dosya değiştirildi · ilk {{visible}} dosya gösteriliyor",
+    "openDiff": "{{file}} farkını aç",
+    "previewFile": "{{file}} önizle",
+    "distribution": {
+      "added": "{{count}} eklendi",
+      "modified": "{{count}} değiştirildi",
+      "deleted": "{{count}} silindi",
+      "conflicted": "{{count}} çakışma"
+    },
+    "status": { "added": "Eklendi", "modified": "Değiştirildi", "deleted": "Silindi", "conflicted": "Çakışma" }
+  },
   "conversationInProgress": "Bir görüşme şu anda devam ediyor...",
   "confirm": "Onayla",
   "canceledExecution": "Yürütme iptal edildi",

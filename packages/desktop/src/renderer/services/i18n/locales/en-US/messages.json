@@ -1,6 +1,25 @@
 {
   "fileChanges": "File Changes",
   "fileChangesCount": "{{count}} File Changes",
+  "fileChangeSummary": {
+    "title": "{{count}} files changed",
+    "partialFailure": "{{changed}} files changed, {{failed}} failed",
+    "lineChanges": "Line changes",
+    "viewChanges": "View changes",
+    "expand": "Expand file list",
+    "collapse": "Collapse file list",
+    "organizing": "Organizing file changes...",
+    "fileLimit": "{{total}} files changed · showing first {{visible}}",
+    "openDiff": "Open diff for {{file}}",
+    "previewFile": "Preview {{file}}",
+    "distribution": {
+      "added": "{{count}} added",
+      "modified": "{{count}} modified",
+      "deleted": "{{count}} deleted",
+      "conflicted": "{{count}} conflicted"
+    },
+    "status": { "added": "Added", "modified": "Modified", "deleted": "Deleted", "conflicted": "Conflict" }
+  },
   "conversationInProgress": "A conversation is currently in progress...",
   "confirm": "Confirm",
   "canceledExecution": "Execution canceled",

@@ -1,6 +1,25 @@
 {
   "fileChanges": "Dateiänderungen",
   "fileChangesCount": "{{count}} Dateiänderungen",
+  "fileChangeSummary": {
+    "title": "{{count}} Dateien geändert",
+    "partialFailure": "{{changed}} Dateien geändert, {{failed}} fehlgeschlagen",
+    "lineChanges": "Zeilenänderungen",
+    "viewChanges": "Änderungen anzeigen",
+    "expand": "Dateiliste aufklappen",
+    "collapse": "Dateiliste zuklappen",
+    "organizing": "Dateiänderungen werden zusammengefasst...",
+    "fileLimit": "{{total}} Dateien geändert · die ersten {{visible}} werden angezeigt",
+    "openDiff": "Diff für {{file}} öffnen",
+    "previewFile": "{{file}} in der Vorschau anzeigen",
+    "distribution": {
+      "added": "{{count}} hinzugefügt",
+      "modified": "{{count}} geändert",
+      "deleted": "{{count}} gelöscht",
+      "conflicted": "{{count}} mit Konflikt"
+    },
+    "status": { "added": "Hinzugefügt", "modified": "Geändert", "deleted": "Gelöscht", "conflicted": "Konflikt" }
+  },
   "conversationInProgress": "Ein Gespräch ist derzeit im Gange...",
   "confirm": "Bestätigen",
   "canceledExecution": "Ausführung abgebrochen",

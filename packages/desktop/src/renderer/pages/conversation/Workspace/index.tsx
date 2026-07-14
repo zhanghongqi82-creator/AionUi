@@ -10,6 +10,10 @@ import FlexFullContainer from '@/renderer/components/layout/FlexFullContainer';
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { usePreviewContext } from '@/renderer/pages/conversation/Preview';
 import { getWorkspaceDisplayName as getDisplayName } from '@/renderer/utils/workspace/workspace';
+import {
+  WORKSPACE_OPEN_CHANGES_EVENT,
+  type WorkspaceOpenChangesDetail,
+} from '@/renderer/utils/workspace/workspaceEvents';
 import { Empty, Message, Tree } from '@arco-design/web-react';
 import { Right } from '@icon-park/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -61,6 +65,15 @@ const ChatWorkspace: React.FC<WorkspaceProps> = ({
   // Tab state and file changes
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('files');
   const fileChangesHook = useFileChanges({ workspace });
+
+  useEffect(() => {
+    const handleOpenChanges = (event: Event) => {
+      const detail = (event as CustomEvent<WorkspaceOpenChangesDetail>).detail;
+      if (!detail?.conversation_id || detail.conversation_id === conversation_id) setActiveTab('changes');
+    };
+    window.addEventListener(WORKSPACE_OPEN_CHANGES_EVENT, handleOpenChanges);
+    return () => window.removeEventListener(WORKSPACE_OPEN_CHANGES_EVENT, handleOpenChanges);
+  }, [conversation_id]);
 
   // Bind workspace uploads to the conversation lifecycle: switching the
   // workspace conversation or unmounting the panel cancels in-flight uploads.

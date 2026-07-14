@@ -1,6 +1,25 @@
 {
   "fileChanges": "Изменения файлов",
   "fileChangesCount": "{{count}} изменений файлов",
+  "fileChangeSummary": {
+    "title": "Изменено файлов: {{count}}",
+    "partialFailure": "Изменено файлов: {{changed}}, с ошибкой: {{failed}}",
+    "lineChanges": "Изменения строк",
+    "viewChanges": "Посмотреть изменения",
+    "expand": "Развернуть список файлов",
+    "collapse": "Свернуть список файлов",
+    "organizing": "Подготовка сводки изменений файлов...",
+    "fileLimit": "Изменено файлов: {{total}} · показаны первые {{visible}}",
+    "openDiff": "Открыть различия для {{file}}",
+    "previewFile": "Предпросмотр {{file}}",
+    "distribution": {
+      "added": "добавлено: {{count}}",
+      "modified": "изменено: {{count}}",
+      "deleted": "удалено: {{count}}",
+      "conflicted": "конфликтов: {{count}}"
+    },
+    "status": { "added": "Добавлен", "modified": "Изменён", "deleted": "Удалён", "conflicted": "Конфликт" }
+  },
   "conversationInProgress": "Диалог в процессе...",
   "confirm": "Подтвердить",
   "canceledExecution": "Выполнение отменено",
