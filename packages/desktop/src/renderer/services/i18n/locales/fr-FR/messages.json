@@ -35,6 +35,11 @@
   "downloadFailed": "Échec du téléchargement",
   "imageLoadFailed": "Échec du chargement de l'image",
   "scrollToBottom": "Défiler vers le bas",
+  "returnAnchor": {
+    "lastSeenHere": "Dernière lecture ici",
+    "newUpdates": "{{count}} nouvelles avancées",
+    "jumpToNewUpdates": "Voir les {{count}} nouvelles avancées"
+  },
   "availableCommands": "{{count}} commandes disponibles",
   "atFile.hint": "Tapez pour rechercher des fichiers",
   "atFile.menuLabel": "Mentions de fichiers",

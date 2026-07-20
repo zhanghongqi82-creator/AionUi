@@ -35,6 +35,11 @@
   "downloadFailed": "Не удалось скачать",
   "imageLoadFailed": "Не удалось загрузить изображение",
   "scrollToBottom": "Прокрутить вниз",
+  "returnAnchor": {
+    "lastSeenHere": "Просмотрено до этого места",
+    "newUpdates": "Новых событий: {{count}}",
+    "jumpToNewUpdates": "Перейти к новым событиям: {{count}}"
+  },
   "availableCommands": "{{count}} доступных команд",
   "slash.title": "Команды",
   "slash.hint": "Введите / для открытия меню команд",

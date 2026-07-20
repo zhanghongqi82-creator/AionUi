@@ -23,11 +23,13 @@ const FOLLOW_BOTTOM_THRESHOLD_PX = 4;
 interface UseAutoScrollOptions {
   messages: TMessage[];
   itemCount: number;
+  conversationId?: string;
 }
 
 interface ScrollElementIntoViewOptions {
   behavior?: ScrollBehavior;
   block?: ScrollLogicalPosition;
+  preserveUnread?: boolean;
 }
 
 interface UseAutoScrollReturn {
@@ -37,47 +39,102 @@ interface UseAutoScrollReturn {
   handleWheel: (e: React.WheelEvent<HTMLDivElement>) => void;
   handlePointerDown: () => void;
   showScrollButton: boolean;
+  unreadCount: number;
+  firstUnreadMessageId?: string;
   scrollToBottom: (behavior?: ScrollBehavior) => void;
   scrollElementIntoView: (element: HTMLElement | null, options?: ScrollElementIntoViewOptions) => void;
+  markUnreadRead: () => void;
   hideScrollButton: () => void;
 }
+
+type ConversationScrollMemory = {
+  scrollTop: number;
+  userScrolled: boolean;
+  unreadCount: number;
+  firstUnreadMessageId?: string;
+};
+
+const conversationScrollMemory = new Map<string, ConversationScrollMemory>();
 
 const getBottomGap = (element: HTMLElement): number => {
   return element.scrollHeight - element.clientHeight - element.scrollTop;
 };
 
-export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): UseAutoScrollReturn {
+export function useAutoScroll({ messages, itemCount, conversationId }: UseAutoScrollOptions): UseAutoScrollReturn {
+  const initialMemory = conversationId ? conversationScrollMemory.get(conversationId) : undefined;
   const [scrollerEl, setScrollerEl] = useState<HTMLDivElement | null>(null);
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(initialMemory?.userScrolled ?? false);
+  const [unreadCount, setUnreadCount] = useState(initialMemory?.unreadCount ?? 0);
+  const [firstUnreadMessageId, setFirstUnreadMessageId] = useState(initialMemory?.firstUnreadMessageId);
 
-  const userScrolledRef = useRef(false);
-  const lastScrollTopRef = useRef(0);
-  const previousListLengthRef = useRef(messages.length);
+  const userScrolledRef = useRef(initialMemory?.userScrolled ?? false);
+  const lastScrollTopRef = useRef(initialMemory?.scrollTop ?? 0);
   const previousLastMessageRef = useRef<TMessage | undefined>(messages[messages.length - 1]);
   const lastProgrammaticScrollTimeRef = useRef(0);
   const initialScrollDoneRef = useRef(false);
   const pendingAutoFollowFrameRef = useRef<number | null>(null);
   const userInputActiveRef = useRef(false);
+  const unreadCountRef = useRef(initialMemory?.unreadCount ?? 0);
+  const firstUnreadMessageIdRef = useRef<string | undefined>(initialMemory?.firstUnreadMessageId);
+
+  const persistScrollMemory = useCallback(
+    (element: HTMLDivElement, userScrolled: boolean) => {
+      if (!conversationId) return;
+      conversationScrollMemory.set(conversationId, {
+        scrollTop: element.scrollTop,
+        userScrolled,
+        unreadCount: unreadCountRef.current,
+        firstUnreadMessageId: firstUnreadMessageIdRef.current,
+      });
+    },
+    [conversationId]
+  );
+
+  const updateUnreadState = useCallback(
+    (count: number, anchorId?: string) => {
+      unreadCountRef.current = count;
+      firstUnreadMessageIdRef.current = anchorId;
+      setUnreadCount(count);
+      setFirstUnreadMessageId(anchorId);
+
+      if (!conversationId) return;
+      const memory = conversationScrollMemory.get(conversationId);
+      conversationScrollMemory.set(conversationId, {
+        scrollTop: memory?.scrollTop ?? 0,
+        userScrolled: memory?.userScrolled ?? userScrolledRef.current,
+        unreadCount: count,
+        firstUnreadMessageId: anchorId,
+      });
+    },
+    [conversationId]
+  );
 
   const markProgrammaticScroll = useCallback(() => {
     lastProgrammaticScrollTimeRef.current = Date.now();
   }, []);
 
-  const updateBottomState = useCallback((element: HTMLDivElement) => {
-    const bottomGap = getBottomGap(element);
-    const withinButtonThreshold = bottomGap <= AT_BOTTOM_THRESHOLD_PX;
-    const pinnedToBottom = bottomGap <= FOLLOW_BOTTOM_THRESHOLD_PX;
-    setShowScrollButton(!withinButtonThreshold);
+  const updateBottomState = useCallback(
+    (element: HTMLDivElement) => {
+      const bottomGap = getBottomGap(element);
+      const withinButtonThreshold = bottomGap <= AT_BOTTOM_THRESHOLD_PX;
+      const pinnedToBottom = bottomGap <= FOLLOW_BOTTOM_THRESHOLD_PX;
+      setShowScrollButton(!withinButtonThreshold);
 
-    if (pinnedToBottom) {
-      userScrolledRef.current = false;
-      userInputActiveRef.current = false;
-      lastProgrammaticScrollTimeRef.current = Date.now() - (PROGRAMMATIC_SCROLL_GUARD_MS - 50);
-    }
+      if (pinnedToBottom) {
+        userScrolledRef.current = false;
+        userInputActiveRef.current = false;
+        lastProgrammaticScrollTimeRef.current = Date.now() - (PROGRAMMATIC_SCROLL_GUARD_MS - 50);
+        if (unreadCountRef.current > 0 || firstUnreadMessageIdRef.current) {
+          updateUnreadState(0);
+        }
+      }
 
-    return pinnedToBottom;
-  }, []);
+      persistScrollMemory(element, userScrolledRef.current);
+      return pinnedToBottom;
+    },
+    [persistScrollMemory, updateUnreadState]
+  );
 
   const scrollToBottom = useCallback(
     (behavior: ScrollBehavior = 'smooth') => {
@@ -90,8 +147,9 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
       });
       userScrolledRef.current = false;
       setShowScrollButton(false);
+      updateUnreadState(0);
     },
-    [itemCount, markProgrammaticScroll, scrollerEl]
+    [itemCount, markProgrammaticScroll, scrollerEl, updateUnreadState]
   );
 
   const scheduleAutoFollow = useCallback(() => {
@@ -112,9 +170,26 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
     });
   }, [scrollerEl, scrollToBottom]);
 
-  const handleScrollerRef = useCallback((ref: HTMLDivElement | null) => {
-    setScrollerEl(ref);
-  }, []);
+  const handleScrollerRef = useCallback(
+    (ref: HTMLDivElement | null) => {
+      if (!ref && scrollerEl) {
+        persistScrollMemory(scrollerEl, userScrolledRef.current);
+      }
+
+      setScrollerEl(ref);
+      if (!ref || !conversationId || initialScrollDoneRef.current) return;
+
+      const memory = conversationScrollMemory.get(conversationId);
+      if (!memory || !memory.userScrolled) return;
+
+      ref.scrollTop = memory.scrollTop;
+      lastScrollTopRef.current = memory.scrollTop;
+      userScrolledRef.current = true;
+      initialScrollDoneRef.current = true;
+      setShowScrollButton(true);
+    },
+    [conversationId, persistScrollMemory, scrollerEl]
+  );
 
   const handleContentRef = useCallback((ref: HTMLDivElement | null) => {
     setContentEl(ref);
@@ -124,8 +199,11 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
     (element: HTMLElement | null, options?: ScrollElementIntoViewOptions) => {
       if (!element) return;
 
-      userScrolledRef.current = false;
-      setShowScrollButton(false);
+      if (!options?.preserveUnread) {
+        userScrolledRef.current = false;
+        setShowScrollButton(false);
+        updateUnreadState(0);
+      }
       markProgrammaticScroll();
       element.scrollIntoView({
         behavior: options?.behavior ?? 'smooth',
@@ -133,7 +211,7 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
         inline: 'nearest',
       });
     },
-    [markProgrammaticScroll]
+    [markProgrammaticScroll, updateUnreadState]
   );
 
   const handleScroll = useCallback(
@@ -201,13 +279,15 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
 
   useEffect(() => {
     const currentListLength = messages.length;
-    const previousLength = previousListLengthRef.current;
     const lastMessage = messages[messages.length - 1];
     const previousLastMessage = previousLastMessageRef.current;
-    const isNewMessage = currentListLength > previousLength;
+    const previousLastIndex = previousLastMessage
+      ? messages.findIndex((message) => message.id === previousLastMessage.id)
+      : -1;
+    const appendedMessages = previousLastIndex >= 0 ? messages.slice(previousLastIndex + 1) : [];
+    const isNewMessage = appendedMessages.length > 0;
     const isLastMessageUpdated = currentListLength > 0 && lastMessage !== previousLastMessage;
 
-    previousListLengthRef.current = currentListLength;
     previousLastMessageRef.current = lastMessage;
 
     if (!isNewMessage) {
@@ -218,30 +298,46 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
     }
 
     if (lastMessage?.position !== 'right') {
+      const newAssistantMessages = appendedMessages.filter((message) => message.position === 'left');
+      if (userScrolledRef.current && newAssistantMessages.length > 0) {
+        const anchorId = firstUnreadMessageIdRef.current ?? newAssistantMessages[0]?.id;
+        updateUnreadState(unreadCountRef.current + newAssistantMessages.length, anchorId);
+        setShowScrollButton(true);
+        return;
+      }
       scheduleAutoFollow();
       return;
     }
 
     userScrolledRef.current = false;
+    updateUnreadState(0);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         scrollToBottom('auto');
       });
     });
-  }, [messages, scheduleAutoFollow, scrollToBottom]);
+  }, [messages, scheduleAutoFollow, scrollToBottom, updateUnreadState]);
 
   useEffect(() => {
     return () => {
       if (pendingAutoFollowFrameRef.current !== null) {
         cancelAnimationFrame(pendingAutoFollowFrameRef.current);
       }
+      if (scrollerEl) {
+        persistScrollMemory(scrollerEl, userScrolledRef.current);
+      }
     };
-  }, []);
+  }, [persistScrollMemory, scrollerEl]);
+
+  const markUnreadRead = useCallback(() => {
+    updateUnreadState(0, firstUnreadMessageIdRef.current);
+  }, [updateUnreadState]);
 
   const hideScrollButton = useCallback(() => {
     userScrolledRef.current = false;
     setShowScrollButton(false);
-  }, []);
+    updateUnreadState(0);
+  }, [updateUnreadState]);
 
   return {
     handleScrollerRef,
@@ -250,8 +346,11 @@ export function useAutoScroll({ messages, itemCount }: UseAutoScrollOptions): Us
     handleWheel,
     handlePointerDown,
     showScrollButton,
+    unreadCount,
+    firstUnreadMessageId,
     scrollToBottom,
     scrollElementIntoView,
+    markUnreadRead,
     hideScrollButton,
   };
 }

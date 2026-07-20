@@ -35,6 +35,11 @@
   "downloadFailed": "Error en la descarga",
   "imageLoadFailed": "Error al cargar la imagen",
   "scrollToBottom": "Ir al final",
+  "returnAnchor": {
+    "lastSeenHere": "Visto hasta aquí",
+    "newUpdates": "{{count}} novedades",
+    "jumpToNewUpdates": "Ir a {{count}} novedades"
+  },
   "availableCommands": "{{count}} comandos disponibles",
   "atFile.hint": "Escribe para buscar archivos",
   "atFile.menuLabel": "Menciones de archivos",

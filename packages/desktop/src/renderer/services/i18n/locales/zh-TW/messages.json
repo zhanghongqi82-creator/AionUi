@@ -35,6 +35,11 @@
   "downloadFailed": "下載失敗",
   "imageLoadFailed": "圖片載入失敗",
   "scrollToBottom": "滾動到底部",
+  "returnAnchor": {
+    "lastSeenHere": "上次看到這裡",
+    "newUpdates": "{{count}} 則新進展",
+    "jumpToNewUpdates": "前往 {{count}} 則新進展"
+  },
   "availableCommands": "{{count}} 個可用指令",
   "atFile.hint": "輸入以搜尋檔案",
   "atFile.menuLabel": "檔案提及",
