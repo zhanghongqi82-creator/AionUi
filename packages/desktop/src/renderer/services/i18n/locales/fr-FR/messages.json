@@ -103,6 +103,27 @@
       "tool": "Utilisation d’un outil"
     }
   },
+  "nextActions": {
+    "title": "Prochaines étapes suggérées",
+    "undo": "Annuler",
+    "hint": "Les suggestions remplissent seulement le champ. Vous décidez quand envoyer",
+    "analyzeFailure": "Analyser l’échec",
+    "retryChecks": "Relancer les vérifications",
+    "viewChanges": "Voir les modifications",
+    "runChecks": "Lancer les vérifications",
+    "openPreview": "Ouvrir l’aperçu",
+    "adjustStyle": "Ajuster le style",
+    "continueRefine": "Continuer à affiner",
+    "generateChecklist": "Générer une liste",
+    "promptAnalyzeFailure": "Analysez les contrôles échoués pour « {{topic}} » et précisez la cause, la portée, les éléments de preuve et la correction recommandée.",
+    "promptRetryChecks": "Relancez les contrôles liés à « {{topic}} » et résumez les réussites, les échecs, les risques restants et la prochaine étape.",
+    "promptViewChanges": "Examinez les modifications de « {{topic}} » et résumez, fichier par fichier, leur objectif, les différences clés et leur impact.",
+    "promptRunChecks": "Exécutez les contrôles de types, format, tests et interface nécessaires pour « {{topic}} », puis résumez les résultats et les problèmes ouverts.",
+    "promptOpenPreview": "Ouvrez le dernier aperçu de « {{topic}} » et vérifiez la mise en page, la hiérarchie, les espacements, l’adaptation et les états interactifs.",
+    "promptAdjustStyle": "Continuez à améliorer le style de « {{topic}} » en travaillant la hiérarchie, les espacements, l’alignement, les retours d’état et la cohérence.",
+    "promptContinueRefine": "Continuez à détailler « {{topic}} » en développant l’approche, les étapes clés, les détails, les cas limites et les recommandations applicables.",
+    "promptGenerateChecklist": "Créez une liste d’actions pour « {{topic}} » avec des étapes priorisées, les livrables et les critères d’acceptation."
+  },
   "confirmation": {
     "applyChange": "Appliquer cette modification ?",
     "allowExecution": "Autoriser l'exécution ?",

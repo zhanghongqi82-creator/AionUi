@@ -103,6 +103,27 @@
       "tool": "Usando uma ferramenta"
     }
   },
+  "nextActions": {
+    "title": "Próximas etapas sugeridas",
+    "undo": "Desfazer",
+    "hint": "As sugestões apenas preenchem o campo. Você decide quando enviar",
+    "analyzeFailure": "Analisar falha",
+    "retryChecks": "Repetir verificações",
+    "viewChanges": "Ver alterações",
+    "runChecks": "Executar verificações",
+    "openPreview": "Abrir prévia",
+    "adjustStyle": "Ajustar estilo",
+    "continueRefine": "Continuar refinando",
+    "generateChecklist": "Gerar lista",
+    "promptAnalyzeFailure": "Analise as verificações com falha de “{{topic}}” e identifique a causa raiz, o impacto, as evidências e a correção recomendada.",
+    "promptRetryChecks": "Execute novamente as verificações de “{{topic}}” e resuma itens aprovados, falhas, riscos restantes e o próximo passo.",
+    "promptViewChanges": "Revise as alterações de “{{topic}}” e resuma por arquivo o objetivo, as principais diferenças e o impacto.",
+    "promptRunChecks": "Execute as verificações necessárias de tipos, formato, testes e interface para “{{topic}}” e resuma os resultados e pendências.",
+    "promptOpenPreview": "Abra a visualização mais recente de “{{topic}}” e confira layout, hierarquia, espaçamento, responsividade e estados de interação.",
+    "promptAdjustStyle": "Continue refinando o estilo de “{{topic}}”, com foco em hierarquia, espaçamento, alinhamento, feedback de estado e consistência.",
+    "promptContinueRefine": "Continue detalhando “{{topic}}” e amplie a abordagem, as etapas principais, os detalhes, os casos extremos e as recomendações práticas.",
+    "promptGenerateChecklist": "Crie uma lista de ações para “{{topic}}” com etapas priorizadas, entregáveis e critérios de aceitação."
+  },
   "confirmation": {
     "applyChange": "Aplicar esta alteração?",
     "allowExecution": "Permitir execução?",

@@ -103,6 +103,27 @@
       "tool": "使用工具"
     }
   },
+  "nextActions": {
+    "title": "建议下一步",
+    "undo": "撤销",
+    "hint": "点击建议仅填入输入框，由你确认后发送",
+    "analyzeFailure": "分析失败",
+    "retryChecks": "重试检查",
+    "viewChanges": "查看变更",
+    "runChecks": "运行检查",
+    "openPreview": "打开预览",
+    "adjustStyle": "调整样式",
+    "continueRefine": "继续细化",
+    "generateChecklist": "生成清单",
+    "promptAnalyzeFailure": "请分析“{{topic}}”相关检查失败的原因，说明根因、影响范围、定位依据和建议修复方案。",
+    "promptRetryChecks": "请针对“{{topic}}”重新运行相关检查，并汇总通过项、失败项、剩余风险和下一步建议。",
+    "promptViewChanges": "请查看“{{topic}}”的本轮变更，按文件说明改动目的、关键差异和影响范围。",
+    "promptRunChecks": "请为“{{topic}}”运行必要的类型、格式、测试与界面检查，并汇总结果和未解决问题。",
+    "promptOpenPreview": "请打开“{{topic}}”的最新预览，重点检查布局、视觉层级、间距、响应式表现和交互状态。",
+    "promptAdjustStyle": "请继续优化“{{topic}}”的界面样式，重点关注视觉层级、间距、对齐、状态反馈和一致性。",
+    "promptContinueRefine": "请继续细化“{{topic}}”，补充核心方案、关键步骤、重要细节、边界情况和可执行建议。",
+    "promptGenerateChecklist": "请围绕“{{topic}}”生成一份可执行清单，按优先级列出步骤、交付物和验收标准。"
+  },
   "confirmation": {
     "applyChange": "应用此更改？",
     "allowExecution": "允许执行？",

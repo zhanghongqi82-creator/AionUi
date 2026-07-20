@@ -11,6 +11,7 @@ import MobileActionSheet, {
   useAttachEntry,
 } from '@/renderer/components/chat/MobileActionSheet';
 import SendBox from '@/renderer/components/chat/SendBox';
+import NextActionBar from '@/renderer/components/chat/SendBox/NextActionBar';
 import ThoughtDisplay from '@/renderer/components/chat/ThoughtDisplay';
 import FileAttachButton from '@/renderer/components/media/FileAttachButton';
 import FilePreview from '@/renderer/components/media/FilePreview';
@@ -24,7 +25,7 @@ import { useConversationContextSafe } from '@/renderer/hooks/context/Conversatio
 import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
-import { useAddOrUpdateMessage } from '@/renderer/pages/conversation/Messages/hooks';
+import { useAddOrUpdateMessage, useMessageList } from '@/renderer/pages/conversation/Messages/hooks';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -198,7 +199,8 @@ const AcpSendBox: React.FC<{
     },
     [setContent]
   );
-  const { setSendBoxHandler } = usePreviewContext();
+  const messages = useMessageList();
+  const { setSendBoxHandler, activeTab } = usePreviewContext();
 
   // Use useLatestRef to keep latest setters to avoid re-registering handler
   const setContentRef = useLatestRef(setContent);
@@ -660,6 +662,14 @@ Please check your local CLI tool authentication status`,
         running={teamRuntime?.loading ?? (aiProcessing && !hasThinkingMessage)}
         statusText={teamRuntime?.statusText}
         onStop={effectiveHandleStop}
+      />
+
+      <NextActionBar
+        messages={messages}
+        isProcessing={teamRuntime?.loading ?? isBusy}
+        hasPreview={Boolean(activeTab)}
+        draft={content}
+        onDraftChange={setContent}
       />
 
       <SendBox

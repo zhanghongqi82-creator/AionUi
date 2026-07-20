@@ -103,6 +103,27 @@
       "tool": "ツールを使用"
     }
   },
+  "nextActions": {
+    "title": "次のステップの候補",
+    "undo": "元に戻す",
+    "hint": "候補は入力欄に入るだけです。送信は確認後に行えます",
+    "analyzeFailure": "失敗を分析",
+    "retryChecks": "チェックを再試行",
+    "viewChanges": "変更を確認",
+    "runChecks": "チェックを実行",
+    "openPreview": "プレビューを開く",
+    "adjustStyle": "スタイルを調整",
+    "continueRefine": "さらに調整",
+    "generateChecklist": "チェックリストを作成",
+    "promptAnalyzeFailure": "「{{topic}}」に関する失敗したチェックを分析し、根本原因、影響範囲、判断根拠、推奨修正案を示してください。",
+    "promptRetryChecks": "「{{topic}}」に関するチェックを再実行し、成功項目、失敗項目、残存リスク、次の手順をまとめてください。",
+    "promptViewChanges": "「{{topic}}」の変更を確認し、ファイルごとに目的、主な差分、影響範囲をまとめてください。",
+    "promptRunChecks": "「{{topic}}」に必要な型、形式、テスト、UIチェックを実行し、結果と未解決事項をまとめてください。",
+    "promptOpenPreview": "「{{topic}}」の最新プレビューを開き、レイアウト、階層、余白、レスポンシブ表示、操作状態を確認してください。",
+    "promptAdjustStyle": "「{{topic}}」のUIスタイルをさらに調整し、階層、余白、整列、状態フィードバック、一貫性を改善してください。",
+    "promptContinueRefine": "「{{topic}}」をさらに具体化し、基本方針、主要手順、重要な詳細、境界条件、実行可能な提案を補足してください。",
+    "promptGenerateChecklist": "「{{topic}}」の実行可能なチェックリストを作成し、優先度順の手順、成果物、受け入れ基準を示してください。"
+  },
   "confirmation": {
     "applyChange": "この変更を適用しますか？",
     "allowExecution": "実行を許可しますか？",

@@ -103,6 +103,27 @@
       "tool": "Werkzeug verwenden"
     }
   },
+  "nextActions": {
+    "title": "Empfohlene nächste Schritte",
+    "undo": "Rückgängig",
+    "hint": "Vorschläge füllen nur das Eingabefeld. Du entscheidest, wann gesendet wird",
+    "analyzeFailure": "Fehler analysieren",
+    "retryChecks": "Prüfungen wiederholen",
+    "viewChanges": "Änderungen ansehen",
+    "runChecks": "Prüfungen ausführen",
+    "openPreview": "Vorschau öffnen",
+    "adjustStyle": "Stil anpassen",
+    "continueRefine": "Weiter verfeinern",
+    "generateChecklist": "Checkliste erstellen",
+    "promptAnalyzeFailure": "Analysiere die fehlgeschlagenen Prüfungen für „{{topic}}“ und nenne Ursache, Auswirkungen, Belege und eine empfohlene Lösung.",
+    "promptRetryChecks": "Führe die relevanten Prüfungen für „{{topic}}“ erneut aus und fasse Erfolge, Fehler, verbleibende Risiken und den nächsten Schritt zusammen.",
+    "promptViewChanges": "Prüfe die Änderungen für „{{topic}}“ und erläutere pro Datei Zweck, wichtige Unterschiede und Auswirkungen.",
+    "promptRunChecks": "Führe für „{{topic}}“ die erforderlichen Typ-, Format-, Test- und UI-Prüfungen aus und fasse Ergebnisse sowie offene Punkte zusammen.",
+    "promptOpenPreview": "Öffne die neueste Vorschau für „{{topic}}“ und prüfe Layout, Hierarchie, Abstände, Responsivität und Interaktionszustände.",
+    "promptAdjustStyle": "Optimiere den UI-Stil für „{{topic}}“ weiter und achte auf Hierarchie, Abstände, Ausrichtung, Statusfeedback und Konsistenz.",
+    "promptContinueRefine": "Verfeinere „{{topic}}“ weiter und ergänze Kernansatz, wichtige Schritte, Details, Randfälle und umsetzbare Empfehlungen.",
+    "promptGenerateChecklist": "Erstelle für „{{topic}}“ eine umsetzbare Checkliste mit priorisierten Schritten, Ergebnissen und Akzeptanzkriterien."
+  },
   "confirmation": {
     "applyChange": "Diese Änderung anwenden?",
     "allowExecution": "Ausführung erlauben?",

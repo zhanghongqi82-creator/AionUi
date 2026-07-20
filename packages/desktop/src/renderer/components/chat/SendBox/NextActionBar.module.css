@@ -1,0 +1,68 @@
+.bar {
+  min-width: 0;
+  padding: 0 0 8px;
+  transition: opacity 0.18s ease;
+}
+
+.weak {
+  opacity: 0.5;
+}
+
+.weak:focus-within,
+.weak:hover {
+  opacity: 0.82;
+}
+
+.undo:global(.arco-btn) {
+  height: 30px;
+  padding: 0 4px;
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: var(--color-text-3);
+  font-size: 11px;
+}
+
+.actions {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.actions::-webkit-scrollbar {
+  display: none;
+}
+
+.action:global(.arco-btn) {
+  height: 30px;
+  padding: 0 13px;
+  flex: 0 0 auto;
+  color: var(--color-success-6);
+  border-color: transparent;
+  background: var(--color-success-light-1);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.action:global(.arco-btn):hover,
+.action:global(.arco-btn):focus-visible,
+.selected:global(.arco-btn) {
+  color: var(--color-success-7);
+  border-color: var(--color-success-light-3);
+  background: var(--color-success-light-2);
+}
+
+@media (max-width: 767px) {
+  .actions {
+    scroll-padding-inline: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}

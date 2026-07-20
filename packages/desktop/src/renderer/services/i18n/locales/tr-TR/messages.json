@@ -103,6 +103,27 @@
       "tool": "Araç kullanılıyor"
     }
   },
+  "nextActions": {
+    "title": "Önerilen sonraki adımlar",
+    "undo": "Geri al",
+    "hint": "Öneriler yalnızca giriş alanını doldurur. Ne zaman gönderileceğine siz karar verirsiniz",
+    "analyzeFailure": "Hatayı analiz et",
+    "retryChecks": "Kontrolleri yeniden dene",
+    "viewChanges": "Değişiklikleri görüntüle",
+    "runChecks": "Kontrolleri çalıştır",
+    "openPreview": "Önizlemeyi aç",
+    "adjustStyle": "Stili ayarla",
+    "continueRefine": "İyileştirmeye devam et",
+    "generateChecklist": "Kontrol listesi oluştur",
+    "promptAnalyzeFailure": "“{{topic}}” için başarısız kontrolleri analiz edin; temel nedeni, etki alanını, kanıtları ve önerilen düzeltmeyi açıklayın.",
+    "promptRetryChecks": "“{{topic}}” ile ilgili kontrolleri yeniden çalıştırın ve geçenleri, hataları, kalan riskleri ve sonraki adımı özetleyin.",
+    "promptViewChanges": "“{{topic}}” değişikliklerini inceleyin ve her dosya için amacı, temel farkları ve etkiyi özetleyin.",
+    "promptRunChecks": "“{{topic}}” için gerekli tür, biçim, test ve arayüz kontrollerini çalıştırın; sonuçları ve çözülmemiş sorunları özetleyin.",
+    "promptOpenPreview": "“{{topic}}” için en son önizlemeyi açın ve düzeni, hiyerarşiyi, boşlukları, duyarlılığı ve etkileşim durumlarını kontrol edin.",
+    "promptAdjustStyle": "“{{topic}}” arayüz stilini hiyerarşi, boşluk, hizalama, durum geri bildirimi ve tutarlılığa odaklanarak geliştirin.",
+    "promptContinueRefine": "“{{topic}}” konusunu ayrıntılandırın; temel yaklaşımı, önemli adımları, ayrıntıları, sınır durumlarını ve uygulanabilir önerileri genişletin.",
+    "promptGenerateChecklist": "“{{topic}}” için önceliklendirilmiş adımlar, çıktılar ve kabul kriterleri içeren uygulanabilir bir kontrol listesi oluşturun."
+  },
   "confirmation": {
     "applyChange": "Bu değişikliği uygula?",
     "allowExecution": "Yürütmeye izin ver?",
