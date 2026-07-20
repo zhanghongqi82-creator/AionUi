@@ -14,6 +14,7 @@ import MobileActionSheet, {
   useAttachEntry,
 } from '@/renderer/components/chat/MobileActionSheet';
 import SendBox from '@/renderer/components/chat/SendBox';
+import NextActionBar from '@/renderer/components/chat/SendBox/NextActionBar';
 import ThoughtDisplay from '@/renderer/components/chat/ThoughtDisplay';
 import FileAttachButton from '@/renderer/components/media/FileAttachButton';
 import FilePreview from '@/renderer/components/media/FilePreview';
@@ -27,6 +28,7 @@ import { createSetUploadFile, useSendBoxFiles } from '@/renderer/hooks/chat/useS
 import { useSlashCommands } from '@/renderer/hooks/chat/useSlashCommands';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
+import { useMessageList } from '@/renderer/pages/conversation/Messages/hooks';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -212,7 +214,8 @@ const AionrsSendBox: React.FC<{
     prepareRuntime: teamPermission ? prepareRuntimeSync : undefined,
   });
 
-  const { setSendBoxHandler } = usePreviewContext();
+  const messages = useMessageList();
+  const { setSendBoxHandler, activeTab } = usePreviewContext();
   const commandQueueRuntimeGate = teamRuntime?.runtimeGate ?? {
     hydrated: runtimeView.hydrated,
     canSendMessage: runtimeView.canSendMessage,
@@ -652,6 +655,14 @@ const AionrsSendBox: React.FC<{
         running={teamRuntime?.loading ?? running}
         statusText={teamRuntime?.statusText}
         onStop={effectiveHandleStop}
+      />
+
+      <NextActionBar
+        messages={messages}
+        isProcessing={teamRuntime?.loading ?? isBusy}
+        hasPreview={Boolean(activeTab)}
+        draft={content}
+        onDraftChange={setContent}
       />
 
       <SendBox
