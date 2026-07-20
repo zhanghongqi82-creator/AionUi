@@ -80,6 +80,29 @@
   "noOptionsAvailable": "No options available",
   "processing": "Processing...",
   "responseSentSuccessfully": "Response sent successfully",
+  "activityStack": {
+    "runningTitle": "{{action}} in progress",
+    "completedTitle": "Execution activity",
+    "progressLabel": "{{completed}} of {{total}} completed",
+    "expand": "Expand execution activity",
+    "collapse": "Collapse execution activity",
+    "expandItem": "Expand {{name}} details",
+    "collapseItem": "Collapse {{name}} details",
+    "allActivities": "All execution activities",
+    "importantActivities": "Execution issues",
+    "loadingDetail": "Loading details...",
+    "loadDetailFailed": "Failed to load full details",
+    "input": "Input",
+    "output": "Output",
+    "actions": {
+      "read": "Reading files",
+      "search": "Searching the project",
+      "edit": "Editing files",
+      "execute": "Running a command",
+      "browse": "Browsing the web",
+      "tool": "Using a tool"
+    }
+  },
   "confirmation": {
     "applyChange": "Apply this change?",
     "allowExecution": "Allow execution?",

@@ -80,6 +80,29 @@
   "noOptionsAvailable": "沒有可用選項",
   "processing": "處理中...",
   "responseSentSuccessfully": "回覆已成功送出",
+  "activityStack": {
+    "runningTitle": "正在{{action}}",
+    "completedTitle": "執行活動",
+    "progressLabel": "已完成 {{completed}} 項，共 {{total}} 項",
+    "expand": "展開執行活動",
+    "collapse": "收合執行活動",
+    "expandItem": "展開 {{name}} 詳情",
+    "collapseItem": "收合 {{name}} 詳情",
+    "allActivities": "全部執行活動",
+    "importantActivities": "異常執行活動",
+    "loadingDetail": "正在載入詳情...",
+    "loadDetailFailed": "無法載入完整詳情",
+    "input": "輸入",
+    "output": "輸出",
+    "actions": {
+      "read": "讀取檔案",
+      "search": "搜尋專案",
+      "edit": "修改檔案",
+      "execute": "執行命令",
+      "browse": "瀏覽網頁",
+      "tool": "使用工具"
+    }
+  },
   "confirmation": {
     "applyChange": "應用此更改？",
     "allowExecution": "允許執行？",
