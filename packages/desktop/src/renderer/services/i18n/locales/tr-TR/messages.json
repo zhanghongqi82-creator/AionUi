@@ -75,6 +75,29 @@
   "noOptionsAvailable": "Seçenek yok",
   "processing": "İşleniyor...",
   "responseSentSuccessfully": "Yanıt başarıyla gönderildi",
+  "activityStack": {
+    "runningTitle": "{{action}} devam ediyor",
+    "completedTitle": "Yürütme etkinliği",
+    "progressLabel": "{{total}} öğeden {{completed}} tanesi tamamlandı",
+    "expand": "Yürütme etkinliğini genişlet",
+    "collapse": "Yürütme etkinliğini daralt",
+    "expandItem": "{{name}} ayrıntılarını genişlet",
+    "collapseItem": "{{name}} ayrıntılarını daralt",
+    "allActivities": "Tüm yürütme etkinlikleri",
+    "importantActivities": "Yürütme sorunları",
+    "loadingDetail": "Ayrıntılar yükleniyor...",
+    "loadDetailFailed": "Tüm ayrıntılar yüklenemedi",
+    "input": "Girdi",
+    "output": "Çıktı",
+    "actions": {
+      "read": "Dosyalar okunuyor",
+      "search": "Projede aranıyor",
+      "edit": "Dosyalar düzenleniyor",
+      "execute": "Komut çalıştırılıyor",
+      "browse": "Web'de geziniliyor",
+      "tool": "Araç kullanılıyor"
+    }
+  },
   "confirmation": {
     "applyChange": "Bu değişikliği uygula?",
     "allowExecution": "Yürütmeye izin ver?",

@@ -75,6 +75,29 @@
   "noOptionsAvailable": "No hay opciones disponibles",
   "processing": "Procesando...",
   "responseSentSuccessfully": "Respuesta enviada correctamente",
+  "activityStack": {
+    "runningTitle": "{{action}} en curso",
+    "completedTitle": "Actividad de ejecución",
+    "progressLabel": "{{completed}} de {{total}} completadas",
+    "expand": "Expandir actividad de ejecución",
+    "collapse": "Contraer actividad de ejecución",
+    "expandItem": "Expandir detalles de {{name}}",
+    "collapseItem": "Contraer detalles de {{name}}",
+    "allActivities": "Todas las actividades de ejecución",
+    "importantActivities": "Problemas de ejecución",
+    "loadingDetail": "Cargando detalles...",
+    "loadDetailFailed": "No se pudieron cargar los detalles completos",
+    "input": "Entrada",
+    "output": "Salida",
+    "actions": {
+      "read": "Leyendo archivos",
+      "search": "Buscando en el proyecto",
+      "edit": "Editando archivos",
+      "execute": "Ejecutando un comando",
+      "browse": "Navegando por la web",
+      "tool": "Usando una herramienta"
+    }
+  },
   "confirmation": {
     "applyChange": "¿Aplicar este cambio?",
     "allowExecution": "¿Permitir la ejecución?",

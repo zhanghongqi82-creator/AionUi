@@ -1,108 +1,242 @@
-@keyframes breathing {
+@keyframes tool-activity-breathing {
   0%,
   100% {
-    opacity: 0.4;
+    opacity: 0.45;
   }
+
   50% {
     opacity: 1;
   }
 }
 
 .badge-breathing .arco-badge-status-dot {
-  animation: breathing 1.5s ease-in-out infinite;
+  animation: tool-activity-breathing 1.5s ease-in-out infinite;
 }
 
-.tool-group-summary {
-  margin: 4px 0;
+.tool-activity-stack {
+  max-width: 100%;
+  margin: 6px 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-2);
 }
 
-.tool-group-summary__header {
-  display: inline-flex;
+.tool-activity-stack__header.arco-btn {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 58px;
+  padding: 10px 12px;
+  gap: 10px;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--aou-6);
-  cursor: pointer;
-  user-select: none;
-  line-height: 1;
+  justify-content: flex-start;
+  color: var(--color-text-1);
+  border-radius: 0;
+  text-align: left;
 }
 
-.tool-group-summary__header:hover {
-  color: var(--aou-7);
+.tool-activity-stack__header.arco-btn:hover,
+.tool-activity-stack__header.arco-btn:focus-visible {
+  background: var(--color-fill-1);
 }
 
-.tool-group-summary__icon {
+.tool-activity-stack__icon {
   display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  width: 14px;
-  height: 14px;
-  color: var(--aou-5);
+  border-radius: 9px;
+  color: var(--color-primary-6);
+  background: var(--color-primary-light-1);
 }
 
-.tool-group-summary__header:hover .tool-group-summary__icon {
-  color: var(--aou-6);
+.tool-activity-stack__summary {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.tool-group-summary__label {
+.tool-activity-stack__title {
+  overflow: hidden;
+  color: var(--color-text-1);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.tool-group-summary__arrow {
+.tool-activity-stack__description {
+  overflow: hidden;
+  color: var(--color-text-3);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-activity-stack__count {
+  flex: 0 0 auto;
+  color: var(--color-text-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 18px;
+}
+
+.tool-activity-stack__arrow {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
-  flex-shrink: 0;
-  color: var(--aou-4);
+  color: var(--color-text-3);
   transition: transform 0.2s ease;
 }
 
-.tool-group-summary__arrow--open {
+.tool-activity-stack__arrow--open {
   transform: rotate(90deg);
 }
 
-.tool-group-summary__body {
+.tool-activity-stack__body {
   display: flex;
+  max-height: 360px;
+  padding: 4px 12px 12px 52px;
+  gap: 6px;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px 14px;
-  margin-top: 6px;
-  margin-left: 20px;
-  background: color-mix(in srgb, var(--aou-1) 50%, #fff);
-  border-radius: 8px;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-border-1);
+  background: var(--color-fill-1);
 }
 
-[data-theme='dark'] .tool-group-summary__body {
-  background: var(--aou-1);
+.tool-activity-stack__body--important {
+  max-height: 112px;
+  padding-top: 8px;
+}
+
+.tool-activity-stack__item-wrap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.tool-activity-stack__item {
+  display: flex;
+  width: 100%;
+  min-height: 28px;
+  padding: 4px 0;
+  gap: 9px;
+  align-items: center;
+  color: var(--color-text-2);
+}
+
+.tool-activity-stack__item.arco-btn {
+  height: auto;
+  justify-content: flex-start;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.tool-activity-stack__item--interactive.arco-btn:hover,
+.tool-activity-stack__item--interactive.arco-btn:focus-visible {
+  color: var(--color-text-1);
+  background: var(--color-fill-2);
+}
+
+.tool-activity-stack__item-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.tool-activity-stack__item-copy--open {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.tool-activity-stack__item-name {
+  flex: 0 0 auto;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.tool-activity-stack__item-description {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-3);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-activity-stack__item-copy--open .tool-activity-stack__item-description {
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tool-activity-stack__item-arrow {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--color-text-3);
+}
+
+.tool-activity-stack__item-wrap[data-tool-status='error'] .tool-activity-stack__item-name {
+  color: var(--color-danger-6);
+}
+
+.tool-activity-stack__item-wrap[data-tool-status='canceled'] .tool-activity-stack__item-name {
+  color: var(--color-text-3);
 }
 
 .tool-detail-panel {
-  border-left: 2px solid var(--color-border-2, #e5e6eb);
-  padding-left: 10px;
-  margin-bottom: 4px;
+  padding: 6px 0 2px 20px;
+  margin-left: 5px;
+  border-left: 2px solid var(--color-border-2);
 }
 
 .tool-detail-section {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .tool-detail-label {
-  font-size: 11px;
-  color: var(--color-text-3, #86909c);
-  font-weight: 500;
   margin-bottom: 2px;
+  color: var(--color-text-3);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .tool-detail-content {
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--color-text-2, #4e5969);
-  background: var(--color-fill-1, #f7f8fa);
-  border-radius: 4px;
+  max-height: 200px;
   padding: 6px 8px;
   margin: 0;
+  overflow-y: auto;
+  color: var(--color-text-2);
+  border-radius: 6px;
+  background: var(--color-fill-2);
+  font-size: 12px;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-all;
-  max-height: 200px;
-  overflow-y: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-breathing .arco-badge-status-dot {
+    animation: none;
+  }
+
+  .tool-activity-stack__arrow {
+    transition: none;
+  }
 }

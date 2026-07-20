@@ -125,7 +125,7 @@ const buildParamSummary = (kind: string, rawInput?: Record<string, unknown>): st
     return (rawInput.file_path as string) || (rawInput.path as string);
   }
 
-  for (const key of ['file_path', 'command', 'path', 'pattern', 'query', 'url']) {
+  for (const key of ['file_path', 'command', 'cmd', 'path', 'pattern', 'query', 'url']) {
     if (rawInput[key] && typeof rawInput[key] === 'string') return rawInput[key] as string;
   }
   return undefined;
@@ -200,6 +200,7 @@ export function normalizeToolCall(message: IMessageToolCall): NormalizedToolCall
   const { call_id, name, status, input, output, args, description } = message.content;
   if (!call_id) return undefined;
 
+  const rawInput = input ?? args;
   const displayInput = input
     ? formatValue(input)
     : args && Object.keys(args).length > 0
@@ -210,7 +211,7 @@ export function normalizeToolCall(message: IMessageToolCall): NormalizedToolCall
     key: call_id,
     name,
     status: normalizeToolCallStatus(status),
-    description: description || undefined,
+    description: description || buildParamSummary(name.toLowerCase(), rawInput) || undefined,
     input: displayInput,
     output,
   };

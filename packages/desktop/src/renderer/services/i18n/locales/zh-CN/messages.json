@@ -75,6 +75,29 @@
   "noOptionsAvailable": "无可用选项",
   "processing": "处理中...",
   "responseSentSuccessfully": "响应已成功发送",
+  "activityStack": {
+    "runningTitle": "正在{{action}}",
+    "completedTitle": "执行活动",
+    "progressLabel": "已完成 {{completed}} 项，共 {{total}} 项",
+    "expand": "展开执行活动",
+    "collapse": "收起执行活动",
+    "expandItem": "展开 {{name}} 详情",
+    "collapseItem": "收起 {{name}} 详情",
+    "allActivities": "全部执行活动",
+    "importantActivities": "异常执行活动",
+    "loadingDetail": "正在加载详情...",
+    "loadDetailFailed": "无法加载完整详情",
+    "input": "输入",
+    "output": "输出",
+    "actions": {
+      "read": "读取文件",
+      "search": "搜索项目",
+      "edit": "修改文件",
+      "execute": "执行命令",
+      "browse": "浏览网页",
+      "tool": "使用工具"
+    }
+  },
   "confirmation": {
     "applyChange": "应用此更改？",
     "allowExecution": "允许执行？",

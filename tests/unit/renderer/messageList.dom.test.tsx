@@ -425,6 +425,80 @@ describe('MessageList', () => {
     );
   });
 
+  it('renders one tool event directly and folds two consecutive tool events into an activity stack', () => {
+    const singleTool = [
+      {
+        id: 'tool-1',
+        type: 'tool_call',
+        position: 'left',
+        content: { call_id: 'call-1', name: 'Read', status: 'completed', input: { file_path: 'GuidPage.tsx' } },
+        created_at: 1,
+      },
+      { id: 'final-1', type: 'text', position: 'left', content: { content: 'done' }, created_at: 2 },
+    ] as unknown as IMessageText[];
+
+    const { unmount } = render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={singleTool}>{children}</Wrapper>,
+    });
+
+    expect(screen.getByText('tool_call')).toBeInTheDocument();
+    expect(screen.queryByText('tool_summary')).not.toBeInTheDocument();
+
+    const groupedTools = [
+      singleTool[0],
+      {
+        id: 'tool-2',
+        type: 'tool_call',
+        position: 'left',
+        content: { call_id: 'call-2', name: 'Search', status: 'running', input: { pattern: 'SendBox' } },
+        created_at: 2,
+      },
+      { id: 'final-2', type: 'text', position: 'left', content: { content: 'done' }, created_at: 3 },
+    ] as unknown as IMessageText[];
+
+    unmount();
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={groupedTools}>{children}</Wrapper>,
+    });
+
+    expect(screen.getByText('tool_summary')).toBeInTheDocument();
+    expect(screen.queryByText('tool_call')).not.toBeInTheDocument();
+  });
+
+  it('keeps tool confirmation requests outside the folded activity stack', () => {
+    const messages = [
+      {
+        id: 'tool-confirm',
+        type: 'tool_group',
+        position: 'left',
+        content: [
+          {
+            call_id: 'call-confirm',
+            name: 'ExecCommand',
+            status: 'Confirming',
+            confirmationDetails: { type: 'exec', command: 'bun run test' },
+          },
+        ],
+        created_at: 1,
+      },
+      {
+        id: 'tool-2',
+        type: 'tool_call',
+        position: 'left',
+        content: { call_id: 'call-2', name: 'Read', status: 'completed' },
+        created_at: 2,
+      },
+    ] as unknown as IMessageText[];
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper messages={messages}>{children}</Wrapper>,
+    });
+
+    expect(screen.getByText('tool_group')).toBeInTheDocument();
+    expect(screen.getByText('tool_call')).toBeInTheDocument();
+    expect(screen.queryByText('tool_summary')).not.toBeInTheDocument();
+  });
+
   it('renders the empty slot when there are no messages', () => {
     render(<MessageList emptySlot={<div>empty state</div>} />, {
       wrapper: ({ children }) => <Wrapper messages={[]}>{children}</Wrapper>,

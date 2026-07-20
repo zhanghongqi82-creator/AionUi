@@ -2,7 +2,7 @@ import type { BadgeProps } from '@arco-design/web-react';
 import { Badge, Button, Message, Spin, Tooltip } from '@arco-design/web-react';
 import { IconDown, IconRight } from '@arco-design/web-react/icon';
 import { Checklist, Download, Right } from '@icon-park/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcBridge } from '@/common';
 import { getAcpImageFileName } from '@/common/chat/acpToolCallOutput';
@@ -75,42 +75,53 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
   };
 
   return (
-    <div className='flex flex-col'>
+    <div className='tool-activity-stack__item-wrap' data-tool-status={item.status} role='listitem'>
       {messageContext}
-      <div className='flex flex-row color-#86909C gap-12px items-center'>
-        <Badge status={statusToBadge(item.status)} className={item.status === 'running' ? 'badge-breathing' : ''} />
-        <span
-          className={
-            'flex-1 min-w-0' +
-            (expanded ? ' break-all' : ' truncate') +
-            (hasDetail ? ' cursor-pointer hover:color-#4E5969' : '')
-          }
-          onClick={hasDetail ? toggleExpanded : undefined}
+      {hasDetail ? (
+        <Button
+          type='text'
+          className='tool-activity-stack__item tool-activity-stack__item--interactive'
+          aria-expanded={expanded}
+          aria-label={t(expanded ? 'messages.activityStack.collapseItem' : 'messages.activityStack.expandItem', {
+            name: displayItem.name,
+          })}
+          onClick={toggleExpanded}
         >
-          <span className='font-medium text-13px'>{displayItem.name}</span>
-          {displayItem.description && displayItem.description !== displayItem.name && (
-            <span className='m-l-4px opacity-80 text-13px'>{displayItem.description}</span>
-          )}
-        </span>
-        {hasDetail && (
-          <span className='flex-shrink-0 cursor-pointer hover:color-#4E5969 transition-colors' onClick={toggleExpanded}>
+          <Badge status={statusToBadge(item.status)} className={item.status === 'running' ? 'badge-breathing' : ''} />
+          <span className={`tool-activity-stack__item-copy${expanded ? ' tool-activity-stack__item-copy--open' : ''}`}>
+            <span className='tool-activity-stack__item-name'>{displayItem.name}</span>
+            {displayItem.description && displayItem.description !== displayItem.name && (
+              <span className='tool-activity-stack__item-description'>{displayItem.description}</span>
+            )}
+          </span>
+          <span className='tool-activity-stack__item-arrow' aria-hidden='true'>
             {expanded ? <IconDown style={{ fontSize: 12 }} /> : <IconRight style={{ fontSize: 12 }} />}
           </span>
-        )}
-      </div>
+        </Button>
+      ) : (
+        <div className='tool-activity-stack__item'>
+          <Badge status={statusToBadge(item.status)} className={item.status === 'running' ? 'badge-breathing' : ''} />
+          <span className='tool-activity-stack__item-copy'>
+            <span className='tool-activity-stack__item-name'>{displayItem.name}</span>
+            {displayItem.description && displayItem.description !== displayItem.name && (
+              <span className='tool-activity-stack__item-description'>{displayItem.description}</span>
+            )}
+          </span>
+        </div>
+      )}
       {expanded && hasDetail && (
-        <div className='tool-detail-panel m-l-20px m-t-4px'>
-          {loadingFull && <div className='tool-detail-label'>Loading...</div>}
-          {loadError && <div className='tool-detail-label'>Failed to load full output</div>}
+        <div className='tool-detail-panel'>
+          {loadingFull && <div className='tool-detail-label'>{t('messages.activityStack.loadingDetail')}</div>}
+          {loadError && <div className='tool-detail-label'>{t('messages.activityStack.loadDetailFailed')}</div>}
           {displayItem.input && (
             <div className='tool-detail-section'>
-              <div className='tool-detail-label'>Input</div>
+              <div className='tool-detail-label'>{t('messages.activityStack.input')}</div>
               <pre className='tool-detail-content'>{displayItem.input}</pre>
             </div>
           )}
           {displayItem.output && (
             <div className='tool-detail-section'>
-              <div className='tool-detail-label'>Output</div>
+              <div className='tool-detail-label'>{t('messages.activityStack.output')}</div>
               <pre className='tool-detail-content'>{displayItem.output}</pre>
             </div>
           )}
@@ -141,34 +152,87 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
 };
 
 const MessageToolGroupSummary: React.FC<{ messages: ToolMessage[] }> = ({ messages }) => {
+  const { t } = useTranslation();
   const hasRunning = hasRunningToolMessages(messages);
   const [showMore, setShowMore] = useState(hasRunning);
-
-  useEffect(() => {
-    if (hasRunning) setShowMore(true);
-  }, [hasRunning]);
+  const previousHasRunningRef = useRef(hasRunning);
 
   const tools = useMemo(() => normalizeToolMessages(messages), [messages]);
+  const completedCount = tools.filter((item) => ['completed', 'error', 'canceled'].includes(item.status)).length;
+  const currentItem =
+    tools.findLast((item) => item.status === 'running') ??
+    tools.findLast((item) => item.status === 'pending') ??
+    tools.at(-1);
+  const importantItems = tools.filter((item) => item.status === 'error' || item.status === 'canceled');
+
+  const currentAction = useMemo(() => {
+    const normalizedName = currentItem?.name.toLowerCase() ?? '';
+    if (/(read|file_read)/.test(normalizedName)) return t('messages.activityStack.actions.read');
+    if (/(search|grep|glob|find)/.test(normalizedName)) return t('messages.activityStack.actions.search');
+    if (/(edit|write|replace|patch)/.test(normalizedName)) return t('messages.activityStack.actions.edit');
+    if (/(exec|command|shell|bash|run)/.test(normalizedName)) return t('messages.activityStack.actions.execute');
+    if (/(browser|web|fetch)/.test(normalizedName)) return t('messages.activityStack.actions.browse');
+    return currentItem?.name ?? t('messages.activityStack.actions.tool');
+  }, [currentItem, t]);
+
+  useEffect(() => {
+    if (hasRunning && !previousHasRunningRef.current) setShowMore(true);
+    if (!hasRunning && previousHasRunningRef.current) setShowMore(false);
+    previousHasRunningRef.current = hasRunning;
+  }, [hasRunning]);
+
+  const displayedItems = showMore ? tools : importantItems;
+  const title = hasRunning
+    ? t('messages.activityStack.runningTitle', { action: currentAction })
+    : t('messages.activityStack.completedTitle');
+  const toggleLabel = showMore ? t('messages.activityStack.collapse') : t('messages.activityStack.expand');
 
   return (
-    <div className='tool-group-summary'>
-      <div className='tool-group-summary__header' onClick={() => setShowMore(!showMore)}>
-        <span className='tool-group-summary__icon'>
+    <section className='tool-activity-stack' data-testid='tool-activity-stack' data-running={hasRunning}>
+      <Button
+        type='text'
+        className='tool-activity-stack__header'
+        data-testid='tool-activity-stack-toggle'
+        aria-expanded={showMore}
+        aria-label={toggleLabel}
+        onClick={() => setShowMore((current) => !current)}
+      >
+        <span className='tool-activity-stack__icon' aria-hidden='true'>
           {hasRunning ? <Spin size={12} /> : <Checklist theme='outline' size='14' />}
         </span>
-        <span className='tool-group-summary__label'>View Steps {tools.length > 0 ? `· ${tools.length}` : ''}</span>
-        <span className={`tool-group-summary__arrow${showMore ? ' tool-group-summary__arrow--open' : ''}`}>
+        <span className='tool-activity-stack__summary'>
+          <span className='tool-activity-stack__title'>{title}</span>
+          {hasRunning && currentItem?.description && currentItem.description !== currentItem.name && (
+            <span className='tool-activity-stack__description'>{currentItem.description}</span>
+          )}
+        </span>
+        <span
+          className='tool-activity-stack__count'
+          aria-label={t('messages.activityStack.progressLabel', { completed: completedCount, total: tools.length })}
+        >
+          {completedCount} / {tools.length}
+        </span>
+        <span
+          className={`tool-activity-stack__arrow${showMore ? ' tool-activity-stack__arrow--open' : ''}`}
+          aria-hidden='true'
+        >
           <Right theme='outline' size='12' />
         </span>
-      </div>
-      {showMore && (
-        <div className='tool-group-summary__body'>
-          {tools.map((item) => (
+      </Button>
+      {displayedItems.length > 0 && (
+        <div
+          className={`tool-activity-stack__body${showMore ? '' : ' tool-activity-stack__body--important'}`}
+          role='list'
+          aria-label={
+            showMore ? t('messages.activityStack.allActivities') : t('messages.activityStack.importantActivities')
+          }
+        >
+          {displayedItems.map((item) => (
             <ToolItemDetail key={item.key} item={item} />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

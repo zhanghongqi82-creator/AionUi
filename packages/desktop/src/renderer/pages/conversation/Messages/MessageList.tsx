@@ -334,18 +334,23 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       failedFiles = 0;
     };
     const pushToolList = (message: IMessageToolGroup | IMessageAcpToolCall | IMessageToolCall) => {
-      if (!toolList.length) {
-        toolSourceMessageIds = [];
-        result.push({
-          type: 'tool_summary',
-          id: `tool-summary-${message.id}`,
-          messages: toolList,
-          sourceMessageIds: toolSourceMessageIds,
-          created_at: message.created_at ?? 0,
-        });
-      }
       toolList.push(message);
       toolSourceMessageIds.push(message.id);
+    };
+    const flushToolList = () => {
+      if (toolList.length === 1) {
+        result.push(toolList[0]);
+      } else if (toolList.length >= 2) {
+        result.push({
+          type: 'tool_summary',
+          id: `tool-summary-${toolList[0].id}`,
+          messages: [...toolList],
+          sourceMessageIds: [...toolSourceMessageIds],
+          created_at: toolList[0].created_at ?? 0,
+        });
+      }
+      toolList = [];
+      toolSourceMessageIds = [];
     };
 
     for (let i = 0, len = list.length; i < len; i++) {
@@ -354,8 +359,7 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       if (message.hidden) continue;
       if (message.type === 'available_commands') continue;
       if (message.position === 'right') {
-        toolList = [];
-        toolSourceMessageIds = [];
+        flushToolList();
         flushFileChanges(false);
         turnLastCreatedAt = 0;
         result.push(message);
@@ -363,6 +367,11 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
       }
       turnLastCreatedAt = Math.max(turnLastCreatedAt, message.created_at ?? 0);
       if (message.type === 'tool_group') {
+        if (message.content.some((item) => item.status === 'Confirming')) {
+          flushToolList();
+          result.push(message);
+          continue;
+        }
         failedFiles += message.content.filter((item) => item.name === 'WriteFile' && item.status === 'Error').length;
         const writeFileResults = message.content
           .filter(
@@ -442,10 +451,10 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
         pushToolList(message);
         continue;
       }
-      toolList = [];
-      toolSourceMessageIds = [];
+      flushToolList();
       result.push(message);
     }
+    flushToolList();
     flushFileChanges(isProcessing);
     const visibleArtifacts = artifacts
       .filter((artifact) => {

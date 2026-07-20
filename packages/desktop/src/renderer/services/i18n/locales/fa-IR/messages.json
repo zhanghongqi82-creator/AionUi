@@ -75,6 +75,29 @@
   "noOptionsAvailable": "گزینه‌ای در دسترس نیست",
   "processing": "در حال پردازش...",
   "responseSentSuccessfully": "پاسخ با موفقیت ارسال شد",
+  "activityStack": {
+    "runningTitle": "{{action}} در حال انجام است",
+    "completedTitle": "فعالیت اجرا",
+    "progressLabel": "{{completed}} از {{total}} تکمیل شد",
+    "expand": "باز کردن فعالیت اجرا",
+    "collapse": "جمع کردن فعالیت اجرا",
+    "expandItem": "باز کردن جزئیات {{name}}",
+    "collapseItem": "جمع کردن جزئیات {{name}}",
+    "allActivities": "همه فعالیت‌های اجرا",
+    "importantActivities": "مشکلات اجرا",
+    "loadingDetail": "در حال بارگذاری جزئیات...",
+    "loadDetailFailed": "بارگذاری جزئیات کامل ناموفق بود",
+    "input": "ورودی",
+    "output": "خروجی",
+    "actions": {
+      "read": "خواندن فایل‌ها",
+      "search": "جست‌وجوی پروژه",
+      "edit": "ویرایش فایل‌ها",
+      "execute": "اجرای فرمان",
+      "browse": "مرور وب",
+      "tool": "استفاده از ابزار"
+    }
+  },
   "confirmation": {
     "applyChange": "این تغییر اعمال شود؟",
     "allowExecution": "اجرا مجاز باشد؟",

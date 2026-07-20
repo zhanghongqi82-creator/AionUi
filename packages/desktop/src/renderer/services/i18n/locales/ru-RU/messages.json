@@ -72,6 +72,29 @@
   "noOptionsAvailable": "Нет доступных опций",
   "processing": "Обработка...",
   "responseSentSuccessfully": "Ответ успешно отправлен",
+  "activityStack": {
+    "runningTitle": "{{action}}",
+    "completedTitle": "Ход выполнения",
+    "progressLabel": "Завершено {{completed}} из {{total}}",
+    "expand": "Развернуть ход выполнения",
+    "collapse": "Свернуть ход выполнения",
+    "expandItem": "Развернуть сведения о {{name}}",
+    "collapseItem": "Свернуть сведения о {{name}}",
+    "allActivities": "Все действия выполнения",
+    "importantActivities": "Проблемы выполнения",
+    "loadingDetail": "Загрузка сведений...",
+    "loadDetailFailed": "Не удалось загрузить полные сведения",
+    "input": "Ввод",
+    "output": "Вывод",
+    "actions": {
+      "read": "Чтение файлов",
+      "search": "Поиск по проекту",
+      "edit": "Изменение файлов",
+      "execute": "Выполнение команды",
+      "browse": "Просмотр веб-страниц",
+      "tool": "Использование инструмента"
+    }
+  },
   "confirmation": {
     "applyChange": "Применить это изменение?",
     "allowExecution": "Разрешить выполнение?",

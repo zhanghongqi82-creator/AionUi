@@ -74,6 +74,29 @@
   "noOptionsAvailable": "Немає доступних варіантів",
   "processing": "Обробка...",
   "responseSentSuccessfully": "Відповідь надіслано успішно",
+  "activityStack": {
+    "runningTitle": "{{action}}",
+    "completedTitle": "Хід виконання",
+    "progressLabel": "Завершено {{completed}} з {{total}}",
+    "expand": "Розгорнути хід виконання",
+    "collapse": "Згорнути хід виконання",
+    "expandItem": "Розгорнути деталі {{name}}",
+    "collapseItem": "Згорнути деталі {{name}}",
+    "allActivities": "Усі дії виконання",
+    "importantActivities": "Проблеми виконання",
+    "loadingDetail": "Завантаження деталей...",
+    "loadDetailFailed": "Не вдалося завантажити повні деталі",
+    "input": "Вхід",
+    "output": "Вихід",
+    "actions": {
+      "read": "Читання файлів",
+      "search": "Пошук у проєкті",
+      "edit": "Редагування файлів",
+      "execute": "Виконання команди",
+      "browse": "Перегляд вебсторінок",
+      "tool": "Використання інструмента"
+    }
+  },
   "confirmation": {
     "applyChange": "Застосувати цю зміну?",
     "allowExecution": "Дозволити виконання?",
