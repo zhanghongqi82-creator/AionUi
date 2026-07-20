@@ -35,6 +35,11 @@
   "downloadFailed": "Download fehlgeschlagen",
   "imageLoadFailed": "Bild konnte nicht geladen werden",
   "scrollToBottom": "Nach unten scrollen",
+  "returnAnchor": {
+    "lastSeenHere": "Zuletzt hier gelesen",
+    "newUpdates": "{{count}} neue Fortschritte",
+    "jumpToNewUpdates": "Zu {{count}} neuen Fortschritten"
+  },
   "availableCommands": "{{count}} verfügbare Befehle",
   "atFile.hint": "Zum Suchen nach Dateien tippen",
   "atFile.menuLabel": "Dateierwähnungen",

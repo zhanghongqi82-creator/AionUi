@@ -25,6 +25,7 @@ type StreamRegistry = {
     string,
     {
       runScenario: (options?: { historyPairs?: number; lines?: number; seedHistoryOnly?: boolean }) => Promise<void>;
+      emitAssistantMessages: (contents: string[]) => Promise<void>;
     }
   >;
 };
@@ -434,5 +435,40 @@ test.describe('MessageList real conversation stream', () => {
       maxPostInterventionScrollTop,
       `MessageList resumed auto-follow after user scroll intervention. baseline=${intervention.scrollTop}, max=${maxPostInterventionScrollTop}`
     ).toBeLessThanOrEqual(intervention.scrollTop + 4);
+  });
+
+  test('shows a return anchor and jumps to the first unread progress item', async ({ page }) => {
+    conversationId = await createConversation(page, `e2e-return-anchor-${Date.now()}`);
+
+    await openConversationPage(page, conversationId);
+    await waitForStreamController(page, conversationId);
+    await runScenario(page, conversationId, {
+      historyPairs: 18,
+      lines: 0,
+      seedHistoryOnly: true,
+    });
+
+    await page.waitForTimeout(300);
+    const intervention = await simulateManualScrollIntervention(page);
+    await page.evaluate(async (id) => {
+      await window.__AIONUI_E2E_MESSAGE_STREAM__?.controllers[id]?.emitAssistantMessages([
+        'New progress 1',
+        'New progress 2',
+        'New progress 3',
+      ]);
+    }, conversationId);
+
+    const returnAnchor = page.getByTestId('message-return-anchor');
+    await expect(returnAnchor).toBeVisible();
+    await expect(returnAnchor).toHaveAttribute('data-unread-count', '3');
+    await expect(page.getByTestId('message-unread-divider')).toBeVisible();
+
+    await returnAnchor.click();
+    await expect
+      .poll(async () => {
+        const scroller = page.getByTestId('message-list-scroller');
+        return scroller.evaluate((element) => element.scrollTop);
+      })
+      .toBeGreaterThan(intervention.scrollTop + 4);
   });
 });

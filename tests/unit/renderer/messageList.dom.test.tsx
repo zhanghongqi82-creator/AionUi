@@ -5,7 +5,7 @@
  */
 
 import React, { type PropsWithChildren } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { IMessageText } from '@/common/chat/chatLib';
 import {
@@ -15,7 +15,14 @@ import {
 } from '@/renderer/pages/conversation/Messages/hooks';
 import MessageList from '@/renderer/pages/conversation/Messages/MessageList';
 
-const { useTeamPermissionMock } = vi.hoisted(() => ({
+const { autoScrollState, useTeamPermissionMock } = vi.hoisted(() => ({
+  autoScrollState: {
+    firstUnreadMessageId: undefined as string | undefined,
+    markUnreadRead: vi.fn(),
+    scrollElementIntoView: vi.fn(),
+    showScrollButton: false,
+    unreadCount: 0,
+  },
   useTeamPermissionMock: vi.fn(),
 }));
 
@@ -33,6 +40,9 @@ vi.mock('react-router-dom', () => ({
 }));
 
 vi.mock('@arco-design/web-react', () => ({
+  Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+    <button {...props}>{children}</button>
+  ),
   Image: {
     PreviewGroup: ({ children }: PropsWithChildren) => <>{children}</>,
   },
@@ -66,9 +76,12 @@ vi.mock('@/renderer/pages/conversation/Messages/useAutoScroll', () => ({
     handleScroll: () => {},
     handleWheel: () => {},
     handlePointerDown: () => {},
-    showScrollButton: false,
+    showScrollButton: autoScrollState.showScrollButton,
+    unreadCount: autoScrollState.unreadCount,
+    firstUnreadMessageId: autoScrollState.firstUnreadMessageId,
     scrollToBottom: () => {},
-    scrollElementIntoView: () => {},
+    scrollElementIntoView: autoScrollState.scrollElementIntoView,
+    markUnreadRead: autoScrollState.markUnreadRead,
     hideScrollButton: () => {},
   }),
 }));
@@ -191,7 +204,32 @@ function Wrapper({
 describe('MessageList', () => {
   beforeEach(() => {
     mockIsProcessing = false;
+    autoScrollState.firstUnreadMessageId = undefined;
+    autoScrollState.markUnreadRead.mockReset();
+    autoScrollState.scrollElementIntoView.mockReset();
+    autoScrollState.showScrollButton = false;
+    autoScrollState.unreadCount = 0;
     useTeamPermissionMock.mockReturnValue(null);
+  });
+
+  it('renders a readable return anchor and jumps to the first unread message', () => {
+    autoScrollState.firstUnreadMessageId = 'message-1';
+    autoScrollState.showScrollButton = true;
+    autoScrollState.unreadCount = 3;
+
+    render(<MessageList />, {
+      wrapper: ({ children }) => <Wrapper>{children}</Wrapper>,
+    });
+
+    expect(screen.getByTestId('message-unread-divider')).toHaveTextContent('messages.returnAnchor.lastSeenHere');
+    expect(screen.getByTestId('message-return-anchor')).toHaveTextContent('messages.returnAnchor.newUpdates');
+
+    fireEvent.click(screen.getByTestId('message-return-anchor'));
+
+    expect(autoScrollState.scrollElementIntoView).toHaveBeenCalledWith(
+      screen.getByTestId('message-text-left'),
+      expect.objectContaining({ block: 'start', preserveUnread: true })
+    );
   });
 
   it('renders message rows with external margin spacing in the plain scroll list', () => {

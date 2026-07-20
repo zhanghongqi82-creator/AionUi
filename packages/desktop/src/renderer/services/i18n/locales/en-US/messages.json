@@ -35,6 +35,11 @@
   "downloadFailed": "Failed to download",
   "imageLoadFailed": "Failed to load image",
   "scrollToBottom": "Scroll to bottom",
+  "returnAnchor": {
+    "lastSeenHere": "Last seen here",
+    "newUpdates": "{{count}} new updates",
+    "jumpToNewUpdates": "Go to {{count}} new updates"
+  },
   "availableCommands": "{{count}} Available Commands",
   "atFile.hint": "Type to search for files",
   "atFile.menuLabel": "File mentions",

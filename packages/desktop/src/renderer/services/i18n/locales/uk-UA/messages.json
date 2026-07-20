@@ -34,6 +34,11 @@
   "downloadFailed": "Не вдалося завантажити",
   "imageLoadFailed": "Не вдалося завантажити зображення",
   "scrollToBottom": "Прокрутити донизу",
+  "returnAnchor": {
+    "lastSeenHere": "Переглянуто до цього місця",
+    "newUpdates": "Нових подій: {{count}}",
+    "jumpToNewUpdates": "Перейти до нових подій: {{count}}"
+  },
   "availableCommands": "Доступні команди: {{count}}",
   "atFile.hint": "Введіть, щоб знайти файли",
   "atFile.menuLabel": "Згадки файлів",

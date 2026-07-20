@@ -264,6 +264,77 @@ describe('useAutoScroll', () => {
     expect(result.current.showScrollButton).toBe(true);
   });
 
+  it('counts appended assistant messages while the user is away from the bottom', () => {
+    const scroller = createScroller({ scrollTop: 600 });
+    const content = createContent();
+    const nextMessage = {
+      ...createLeftMessage('new progress'),
+      id: 'left-message-2',
+      msg_id: 'left-message-2',
+      created_at: 2,
+    };
+    const { result, rerender } = renderHook(({ messages }) => useAutoScroll({ messages, itemCount: messages.length }), {
+      initialProps: { messages: [createLeftMessage('hello')] as TMessage[] },
+    });
+
+    attachElements(result, scroller, content);
+    act(() => vi.runAllTimers());
+    vi.mocked(scroller.scrollTo).mockClear();
+    act(() => {
+      result.current.handleWheel({ deltaX: 0, deltaY: -240 } as React.WheelEvent<HTMLDivElement>);
+    });
+    fireScroll(result.current.handleScroll, scroller, 260);
+
+    act(() => rerender({ messages: [createLeftMessage('hello'), nextMessage] }));
+
+    expect(result.current.unreadCount).toBe(1);
+    expect(result.current.firstUnreadMessageId).toBe('left-message-2');
+    expect(result.current.showScrollButton).toBe(true);
+    expect(scroller.scrollTo).not.toHaveBeenCalled();
+
+    act(() => result.current.markUnreadRead());
+    expect(result.current.unreadCount).toBe(0);
+    expect(result.current.firstUnreadMessageId).toBe('left-message-2');
+  });
+
+  it('restores each conversation reading position and unread anchor in client memory', () => {
+    const scroller = createScroller({ scrollTop: 600 });
+    const content = createContent();
+    const nextMessage = {
+      ...createLeftMessage('new progress'),
+      id: 'left-message-memory',
+      msg_id: 'left-message-memory',
+      created_at: 2,
+    };
+    const firstRender = renderHook(
+      ({ messages }) => useAutoScroll({ messages, itemCount: messages.length, conversationId: 'conversation-memory' }),
+      { initialProps: { messages: [createLeftMessage('hello')] as TMessage[] } }
+    );
+
+    attachElements(firstRender.result, scroller, content);
+    act(() => vi.runAllTimers());
+    act(() => {
+      firstRender.result.current.handleWheel({ deltaX: 0, deltaY: -240 } as React.WheelEvent<HTMLDivElement>);
+    });
+    fireScroll(firstRender.result.current.handleScroll, scroller, 260);
+    act(() => firstRender.rerender({ messages: [createLeftMessage('hello'), nextMessage] }));
+    firstRender.unmount();
+
+    const restoredScroller = createScroller({ scrollTop: 0 });
+    const restored = renderHook(() =>
+      useAutoScroll({
+        messages: [createLeftMessage('hello'), nextMessage],
+        itemCount: 2,
+        conversationId: 'conversation-memory',
+      })
+    );
+    attachElements(restored.result, restoredScroller, createContent());
+
+    expect(restoredScroller.scrollTop).toBe(260);
+    expect(restored.result.current.unreadCount).toBe(1);
+    expect(restored.result.current.firstUnreadMessageId).toBe('left-message-memory');
+  });
+
   it('does not auto-follow after the user manually scrolls while remaining away from the bottom', () => {
     const scroller = createScroller({ scrollTop: 600 });
     const content = createContent();

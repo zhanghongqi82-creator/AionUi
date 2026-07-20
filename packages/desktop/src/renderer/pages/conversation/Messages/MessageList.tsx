@@ -12,7 +12,7 @@ import { getChatSurfaceWidthClass } from '@/renderer/pages/conversation/utils/ch
 import { useTeamPermission } from '@/renderer/pages/team/hooks/TeamPermissionContext';
 import { iconColors } from '@/renderer/styles/colors';
 import { CHAT_MESSAGE_JUMP_EVENT, type ChatMessageJumpDetail } from '@/renderer/utils/chat/chatMinimapEvents';
-import { Image } from '@arco-design/web-react';
+import { Button, Image } from '@arco-design/web-react';
 import { Down } from '@icon-park/react';
 import MessageAcpPermission from '@renderer/pages/conversation/Messages/acp/MessageAcpPermission';
 import MessagePermission from './components/MessagePermission';
@@ -513,12 +513,16 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     handleWheel,
     handlePointerDown,
     showScrollButton,
+    unreadCount,
+    firstUnreadMessageId,
     scrollToBottom,
     scrollElementIntoView,
+    markUnreadRead,
     hideScrollButton,
   } = useAutoScroll({
     messages: list,
     itemCount: processedList.length,
+    conversationId: conversationContext?.conversation_id,
   });
 
   const setScrollerRef = useCallback(
@@ -541,6 +545,19 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
     (event: React.UIEvent<HTMLDivElement>) => {
       handleScroll(event);
       const scroller = event.currentTarget;
+      if (firstUnreadMessageId && unreadCount > 0) {
+        const unreadItem = processedList.find((item) => matchesTargetMessage(item, firstUnreadMessageId));
+        const unreadElement = unreadItem
+          ? document.getElementById(`message-${getProcessedItemAnchorId(unreadItem)}`)
+          : null;
+        if (unreadElement) {
+          const scrollerRect = scroller.getBoundingClientRect();
+          const unreadRect = unreadElement.getBoundingClientRect();
+          if (unreadRect.top <= scrollerRect.bottom - 24) {
+            markUnreadRead();
+          }
+        }
+      }
       if (!pagination.hasMoreBefore || pagination.isLoadingBefore || scroller.scrollTop > 160) {
         return;
       }
@@ -554,7 +571,16 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
         });
       });
     },
-    [handleScroll, loadPreviousMessagePage, pagination.hasMoreBefore, pagination.isLoadingBefore]
+    [
+      firstUnreadMessageId,
+      handleScroll,
+      loadPreviousMessagePage,
+      markUnreadRead,
+      pagination.hasMoreBefore,
+      pagination.isLoadingBefore,
+      processedList,
+      unreadCount,
+    ]
   );
 
   useEffect(() => {
@@ -665,9 +691,34 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
 
   // Click scroll button
   const handleScrollButtonClick = () => {
+    if (firstUnreadMessageId) {
+      const unreadItem = processedList.find((item) => matchesTargetMessage(item, firstUnreadMessageId));
+      const unreadElement = unreadItem
+        ? document.getElementById(`message-${getProcessedItemAnchorId(unreadItem)}`)
+        : null;
+      if (unreadElement) {
+        scrollElementIntoView(unreadElement, { behavior: 'smooth', block: 'start', preserveUnread: true });
+        return;
+      }
+    }
     hideScrollButton();
     scrollToBottom('smooth');
   };
+
+  const renderUnreadDivider = () => (
+    <div
+      role='separator'
+      data-testid='message-unread-divider'
+      className={`${rowWidthClass} mx-auto flex items-center gap-10px px-8px py-10px`}
+      aria-label={t('messages.returnAnchor.lastSeenHere')}
+    >
+      <span className='h-1px flex-1 bg-[rgba(var(--warning-6),0.42)]' />
+      <span className='shrink-0 rd-full bg-[rgba(var(--warning-6),0.12)] px-12px py-5px text-11px text-warning-6'>
+        {t('messages.returnAnchor.lastSeenHere')}
+      </span>
+      <span className='h-1px flex-1 bg-[rgba(var(--warning-6),0.42)]' />
+    </div>
+  );
 
   const renderItem = (_index: number, item: (typeof processedList)[0]) => {
     const highlighted = matchesTargetMessage(item, highlightedMessageId);
@@ -749,7 +800,10 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
             <div ref={setContentRef} data-testid='message-list-content' style={{ overflowAnchor: 'none' }}>
               <div className='h-10px' />
               {processedList.map((item, index) => (
-                <React.Fragment key={getProcessedItemAnchorId(item) || index}>{renderItem(index, item)}</React.Fragment>
+                <React.Fragment key={getProcessedItemAnchorId(item) || index}>
+                  {matchesTargetMessage(item, firstUnreadMessageId) ? renderUnreadDivider() : null}
+                  {renderItem(index, item)}
+                </React.Fragment>
               ))}
               <div className='h-20px' />
             </div>
@@ -762,15 +816,51 @@ const MessageList: React.FC<{ className?: string; emptySlot?: React.ReactNode }>
           {/* Gradient mask */}
           <div className='absolute bottom-0 left-0 right-0 h-100px pointer-events-none' />
           {/* Scroll button */}
-          <div className='absolute bottom-20px left-50% transform -translate-x-50% z-100'>
-            <div
-              className='flex items-center justify-center w-40px h-40px rd-full bg-base shadow-lg cursor-pointer hover:bg-1 transition-all hover:scale-110 border-1 border-solid border-3'
+          <div className='absolute bottom-20px left-50% z-100 -translate-x-50% transform'>
+            <Button
+              type='text'
+              className='!inline-flex !items-center !justify-center !rounded-full !shadow-lg'
               onClick={handleScrollButtonClick}
-              title={t('messages.scrollToBottom')}
-              style={{ lineHeight: 0 }}
+              title={
+                unreadCount > 0
+                  ? t('messages.returnAnchor.jumpToNewUpdates', { count: unreadCount })
+                  : t('messages.scrollToBottom')
+              }
+              aria-label={
+                unreadCount > 0
+                  ? t('messages.returnAnchor.jumpToNewUpdates', { count: unreadCount })
+                  : t('messages.scrollToBottom')
+              }
+              data-testid='message-return-anchor'
+              data-unread-count={unreadCount}
+              style={{
+                alignItems: 'center',
+                background: unreadCount > 0 ? 'var(--color-text-1)' : 'var(--bg-base)',
+                border: '1px solid var(--color-border-3)',
+                borderRadius: 999,
+                color: unreadCount > 0 ? 'var(--bg-base)' : 'var(--color-text-1)',
+                display: 'inline-flex',
+                height: unreadCount > 0 ? 38 : 40,
+                justifyContent: 'center',
+                lineHeight: 1,
+                minWidth: unreadCount > 0 ? 0 : 40,
+                padding: unreadCount > 0 ? '0 15px' : 0,
+                whiteSpace: 'nowrap',
+                width: unreadCount > 0 ? 'auto' : 40,
+              }}
             >
-              <Down theme='filled' size='20' fill={iconColors.secondary} style={{ display: 'block' }} />
-            </div>
+              <Down
+                theme='filled'
+                size={unreadCount > 0 ? '15' : '20'}
+                fill={unreadCount > 0 ? 'var(--bg-base)' : iconColors.secondary}
+                style={{ display: 'block' }}
+              />
+              {unreadCount > 0 ? (
+                <span className='ml-6px text-12px leading-none'>
+                  {t('messages.returnAnchor.newUpdates', { count: unreadCount })}
+                </span>
+              ) : null}
+            </Button>
           </div>
         </>
       )}

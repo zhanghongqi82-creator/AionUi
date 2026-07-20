@@ -35,6 +35,11 @@
   "downloadFailed": "ダウンロードに失敗しました",
   "imageLoadFailed": "画像の読み込みに失敗しました",
   "scrollToBottom": "下にスクロール",
+  "returnAnchor": {
+    "lastSeenHere": "前回ここまで確認",
+    "newUpdates": "新しい進捗 {{count}} 件",
+    "jumpToNewUpdates": "新しい進捗 {{count}} 件へ移動"
+  },
   "availableCommands": "{{count}} 個の利用可能なコマンド",
   "atFile.hint": "ファイルを検索するには入力してください",
   "atFile.menuLabel": "ファイル参照",

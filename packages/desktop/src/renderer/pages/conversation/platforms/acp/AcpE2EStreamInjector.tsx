@@ -19,6 +19,7 @@ type RunScenarioOptions = {
 
 type StreamController = {
   runScenario: (options?: RunScenarioOptions) => Promise<void>;
+  emitAssistantMessages: (contents: string[]) => Promise<void>;
   emitInfoTip: (code: string, content: string) => Promise<void>;
   emitFollowUpExchange: () => Promise<void>;
 };
@@ -139,6 +140,32 @@ const AcpE2EStreamInjector: React.FC<{ conversationId: string }> = ({ conversati
 
           pushNextChunk();
         });
+      },
+      emitAssistantMessages: async (contents: string[]) => {
+        await contents.reduce<Promise<void>>(
+          (sequence, content, index) =>
+            sequence.then(
+              () =>
+                new Promise<void>((resolve) => {
+                  const msgId = `e2e-assistant-progress-${Date.now()}-${index}`;
+                  addOrUpdateMessage(
+                    {
+                      id: msgId,
+                      msg_id: msgId,
+                      conversation_id: conversationId,
+                      type: 'text',
+                      position: 'left',
+                      status: 'finish',
+                      created_at: Date.now() + index,
+                      content: { content },
+                    },
+                    true
+                  );
+                  window.setTimeout(resolve, STREAM_TICK_MS);
+                })
+            ),
+          Promise.resolve()
+        );
       },
       emitInfoTip: async (code: string, content: string) => {
         const msgId = `e2e-info-tip-${Date.now()}`;
